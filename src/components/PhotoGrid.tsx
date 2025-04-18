@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Photo } from '@/utils/photos';
 import PhotoCard from './PhotoCard';
 import PhotoModal from './PhotoModal';
@@ -10,21 +11,40 @@ interface PhotoGridProps {
 }
 
 export default function PhotoGrid({ photos }: PhotoGridProps) {
+  const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState(1);
   const photosPerPage = 20;
+  const [filteredPhotos, setFilteredPhotos] = useState<Photo[]>(photos);
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
+  // Handle search filtering on the client side
+  useEffect(() => {
+    const searchQuery = searchParams.get('q') || '';
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const filtered = photos.filter(photo =>
+        (photo.photographer && photo.photographer.toLowerCase().includes(query)) ||
+        (photo.title && photo.title.toLowerCase().includes(query)) ||
+        (photo.description && photo.description.toLowerCase().includes(query))
+      );
+      setFilteredPhotos(filtered);
+      setCurrentPage(1); // Reset to first page when search changes
+    } else {
+      setFilteredPhotos(photos);
+    }
+  }, [searchParams, photos]);
+
   // Calculate total pages
-  const totalPages = Math.ceil(photos.length / photosPerPage);
+  const totalPages = Math.ceil(filteredPhotos.length / photosPerPage);
 
   // Get current photos
   const indexOfLastPhoto = currentPage * photosPerPage;
   const indexOfFirstPhoto = indexOfLastPhoto - photosPerPage;
-  const currentPhotos = photos.slice(indexOfFirstPhoto, indexOfLastPhoto);
+  const currentPhotos = filteredPhotos.slice(indexOfFirstPhoto, indexOfLastPhoto);
 
   // Change page
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);

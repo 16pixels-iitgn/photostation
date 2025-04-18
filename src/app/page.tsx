@@ -2,16 +2,19 @@ import PhotoGrid from '@/components/PhotoGrid';
 import SearchBar from '@/components/SearchBar';
 import { getPhotos } from '@/utils/photos';
 
-// Force dynamic rendering for pages with search parameters
-export const dynamic = 'force-dynamic';
+// Use static rendering with client-side search handling
+// This allows static export while still supporting search
 
 type HomeProps = {
   searchParams?: { q?: string };
 };
 
 export default async function Home({ searchParams }: HomeProps) {
+  // For static export, we'll load all photos and handle filtering on the client
+  const photos = await getPhotos();
+
+  // We'll still respect the searchQuery for when this page is viewed in dev mode
   const searchQuery = searchParams?.q || '';
-  const photos = await getPhotos(searchQuery);
 
   return (
     <div className="space-y-8">
