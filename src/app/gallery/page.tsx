@@ -1,6 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 
+// Get the base path from environment or default to empty string
+const basePath = process.env.NODE_ENV === 'production' ? '/photostation' : '';
+
 // Function to get all image files from the photos directory
 function getImageFiles() {
   const photosDir = path.join(process.cwd(), 'public', 'photos');
@@ -35,7 +38,7 @@ export default function GalleryPage() {
             <div key={index} className="border rounded-lg overflow-hidden shadow-md">
               <div className="relative h-64">
                 <img
-                  src={`/photos/${file}`}
+                  src={`${basePath}/photos/${file}`}
                   alt={`Photo ${index + 1}`}
                   className="w-full h-full object-cover"
                 />

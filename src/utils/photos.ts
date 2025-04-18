@@ -2,6 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import { promises as fsPromises } from 'fs';
 
+// Get the base path from environment or default to empty string
+// This helps with GitHub Pages deployment where the base path is /photostation
+const basePath = process.env.NODE_ENV === 'production' ? '/photostation' : '';
+
 export interface Photo {
   id: string;
   filename: string;
@@ -19,7 +23,7 @@ const fallbackPhotos: Photo[] = [
     photographer: 'John Doe',
     title: 'Sunset at the Beach',
     description: 'A beautiful sunset captured at the beach',
-    src: '/photos/photo1.jpg'
+    src: `${basePath}/photos/photo1.jpg`
   },
   {
     id: '2',
@@ -27,7 +31,7 @@ const fallbackPhotos: Photo[] = [
     photographer: 'Jane Smith',
     title: 'Mountain View',
     description: 'Breathtaking view of mountains in the morning',
-    src: '/photos/photo2.jpg'
+    src: `${basePath}/photos/photo2.jpg`
   },
   {
     id: '3',
@@ -35,7 +39,7 @@ const fallbackPhotos: Photo[] = [
     photographer: 'Alex Johnson',
     title: 'City Lights',
     description: 'Night view of the city skyline',
-    src: '/photos/photo3.jpg'
+    src: `${basePath}/photos/photo3.jpg`
   },
   {
     id: '4',
@@ -43,7 +47,7 @@ const fallbackPhotos: Photo[] = [
     photographer: 'Sarah Williams',
     title: 'Forest Path',
     description: 'A serene path through the dense forest',
-    src: '/photos/photo4.jpg'
+    src: `${basePath}/photos/photo4.jpg`
   },
   {
     id: '5',
@@ -51,7 +55,7 @@ const fallbackPhotos: Photo[] = [
     photographer: 'Michael Brown',
     title: 'Ocean Waves',
     description: 'Powerful ocean waves crashing on rocks',
-    src: '/photos/photo5.jpg'
+    src: `${basePath}/photos/photo5.jpg`
   }
 ];
 
@@ -85,8 +89,8 @@ export async function getPhotos(searchQuery?: string): Promise<Photo[]> {
         photo[header.trim()] = values[index]?.trim() || '';
       });
 
-      // Add the image source path
-      photo.src = `/photos/${photo.filename}`;
+      // Add the image source path with the correct base path
+      photo.src = `${basePath}/photos/${photo.filename}`;
 
       photos.push(photo as Photo);
     }
