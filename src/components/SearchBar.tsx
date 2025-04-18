@@ -11,17 +11,22 @@ export default function SearchBar() {
 
   const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Create new URLSearchParams
-    const params = new URLSearchParams(searchParams);
-    
+
+    // Create new URLSearchParams with the current URL parameters
+    const params = new URLSearchParams();
+
+    // Copy all existing parameters
+    searchParams.forEach((value, key) => {
+      params.append(key, value);
+    });
+
     // Update or remove the 'q' parameter
     if (searchQuery) {
       params.set('q', searchQuery);
     } else {
       params.delete('q');
     }
-    
+
     // Navigate to the same page with updated query parameters
     router.push(`/?${params.toString()}`);
   }, [searchQuery, router, searchParams]);
