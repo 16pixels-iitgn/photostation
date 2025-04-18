@@ -9,7 +9,6 @@ type HomeProps = {
 export default async function Home({ searchParams }: HomeProps) {
   const searchQuery = searchParams?.q || '';
   const photos = await getPhotos(searchQuery);
-  console.log('Photos in page component:', photos.length, searchQuery ? `(filtered by "${searchQuery}")` : '');
 
   return (
     <div className="space-y-8">

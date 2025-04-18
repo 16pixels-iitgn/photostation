@@ -59,17 +59,13 @@ export async function getPhotos(searchQuery?: string): Promise<Photo[]> {
   try {
     // Read the CSV file
     const csvPath = path.join(process.cwd(), 'public', 'photos', 'metadata.csv');
-    console.log('CSV Path:', csvPath);
 
     const csvData = await fsPromises.readFile(csvPath, 'utf-8');
-    console.log('CSV Data loaded, length:', csvData.length);
 
     // Parse CSV data
     const lines = csvData.split('\n');
-    console.log('Number of lines:', lines.length);
 
     const headers = lines[0].split(',');
-    console.log('Headers:', headers);
 
     const photos: Photo[] = [];
 
@@ -77,10 +73,9 @@ export async function getPhotos(searchQuery?: string): Promise<Photo[]> {
       if (!lines[i].trim()) continue;
 
       const values = lines[i].split(',');
-      console.log(`Line ${i} values:`, values);
 
       if (values.length !== headers.length) {
-        console.warn(`Line ${i} has ${values.length} values but expected ${headers.length}`);
+        // Skip lines with incorrect number of values
         continue;
       }
 
@@ -92,16 +87,12 @@ export async function getPhotos(searchQuery?: string): Promise<Photo[]> {
 
       // Add the image source path
       photo.src = `/photos/${photo.filename}`;
-      console.log(`Photo ${i} src:`, photo.src);
 
       photos.push(photo as Photo);
     }
 
-    console.log('Total photos loaded:', photos.length);
-
     // If no photos were loaded from CSV, use fallback data
     if (photos.length === 0) {
-      console.log('Using fallback photo data');
       return fallbackPhotos;
     }
 
@@ -118,7 +109,6 @@ export async function getPhotos(searchQuery?: string): Promise<Photo[]> {
     return photos;
   } catch (error) {
     console.error('Error loading photos:', error);
-    console.log('Using fallback photo data due to error');
     return fallbackPhotos;
   }
 }

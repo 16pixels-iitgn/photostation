@@ -6,9 +6,9 @@ function getImageFiles() {
   const photosDir = path.join(process.cwd(), 'public', 'photos');
   try {
     const files = fs.readdirSync(photosDir);
-    return files.filter(file => 
-      file.endsWith('.jpg') || 
-      file.endsWith('.jpeg') || 
+    return files.filter(file =>
+      file.endsWith('.jpg') ||
+      file.endsWith('.jpeg') ||
       file.endsWith('.png')
     );
   } catch (error) {
@@ -20,11 +20,11 @@ function getImageFiles() {
 export default function GalleryPage() {
   // Get all image files
   const imageFiles = getImageFiles();
-  
+
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-6">Photo Gallery</h1>
-      
+
       {imageFiles.length === 0 ? (
         <div className="bg-red-50 p-4 rounded-lg">
           <p className="text-red-600">No images found in the photos directory.</p>
@@ -34,8 +34,8 @@ export default function GalleryPage() {
           {imageFiles.map((file, index) => (
             <div key={index} className="border rounded-lg overflow-hidden shadow-md">
               <div className="relative h-64">
-                <img 
-                  src={`/photos/${file}`} 
+                <img
+                  src={`/photos/${file}`}
                   alt={`Photo ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
@@ -48,12 +48,7 @@ export default function GalleryPage() {
           ))}
         </div>
       )}
-      
-      <div className="mt-8 p-4 bg-gray-100 rounded-lg">
-        <h3 className="font-semibold mb-2">Debug Info:</h3>
-        <p>Number of images found: {imageFiles.length}</p>
-        <p>Image files: {imageFiles.join(', ')}</p>
-      </div>
+
     </div>
   );
 }
