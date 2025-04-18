@@ -2,6 +2,9 @@ import PhotoGrid from '@/components/PhotoGrid';
 import SearchBar from '@/components/SearchBar';
 import { getPhotos } from '@/utils/photos';
 
+// Force dynamic rendering for pages with search parameters
+export const dynamic = 'force-dynamic';
+
 type HomeProps = {
   searchParams?: { q?: string };
 };
