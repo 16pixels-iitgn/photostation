@@ -76,17 +76,37 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
     setSelectedPhoto(currentPhotos[newIndex]);
   };
 
+  // Get the current search query
+  const searchQuery = searchParams.get('q') || '';
+
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {currentPhotos.map((photo) => (
-          <PhotoCard
-            key={photo.id}
-            photo={photo}
-            onOpenModal={handleOpenModal}
-          />
-        ))}
-      </div>
+      {/* Search results indicator */}
+      {searchQuery && (
+        <div className="text-center mt-4 mb-6 text-sm text-gray-600">
+          Showing results for: <span className="font-semibold">"{searchQuery}"</span>
+          <a href="/" className="ml-2 text-blue-600 hover:text-blue-800">(Clear)</a>
+        </div>
+      )}
+
+      {filteredPhotos.length === 0 ? (
+        <div className="text-center p-8 bg-yellow-50 rounded-lg">
+          <h2 className="text-xl font-semibold text-yellow-600 mb-2">No photos found</h2>
+          <p className="text-gray-600">
+            No photos match your search criteria. Try a different search term.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {currentPhotos.map((photo) => (
+            <PhotoCard
+              key={photo.id}
+              photo={photo}
+              onOpenModal={handleOpenModal}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Photo Modal */}
       <PhotoModal
@@ -97,9 +117,10 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
         onNext={handleNextPhoto}
       />
 
-      {/* Pagination */}
-      <div className="flex justify-center mt-8">
-        <nav className="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+      {/* Pagination - only show if we have photos */}
+      {filteredPhotos.length > 0 && (
+        <div className="flex justify-center mt-8">
+          <nav className="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
           <button
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
@@ -158,6 +179,17 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
             Next &raquo;
           </button>
         </nav>
+      </div>
+      )}
+
+      {/* Collection Info */}
+      <div className="mt-8 p-4 bg-gray-100 rounded-lg">
+        <h3 className="font-semibold mb-2">Collection Info:</h3>
+        <p>Total photos: {photos.length}</p>
+        <p>Contributors: {new Set(photos.map(photo => photo.photographer)).size}</p>
+        {searchQuery && (
+          <p>Matching photos: {filteredPhotos.length}</p>
+        )}
       </div>
     </div>
   );
