@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 16 Pixels PhotoStation
+
+A beautiful, responsive photo gallery built with Next.js that displays photos with photographer information and is deployed on GitHub Pages.
+
+![16 Pixels PhotoStation](https://via.placeholder.com/800x400?text=16+Pixels+PhotoStation)
+
+## Features
+
+- **Responsive photo gallery** - Optimized for all screen sizes
+- **Hover details** - View photographer information by hovering over photos
+- **Full-screen preview** - Click on any photo to open a full-screen preview
+- **Keyboard navigation** - Use arrow keys to navigate between photos in preview mode
+- **Pagination** - Browse through large collections of photos with ease
+- **Dynamic content** - Automatically updates when new photos are added
+- **Search functionality** - Find photos by photographer or description
+- **Automatic deployment** - Deployed to GitHub Pages via GitHub Actions
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Node.js 18.x or later
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/yourusername/photostation.git
+   cd photostation
+   ```
+
+2. Install dependencies
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. Run the development server
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Adding Photos
+
+1. Add your photos to the `public/photos` directory
+2. Update the `public/photos/metadata.csv` file with the photo information
+
+The metadata.csv file should have the following format:
+```
+id,filename,photographer,title,description
+1,photo1.jpg,John Doe,Sunset at the Beach,A beautiful sunset captured at the beach
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The gallery will automatically update when you refresh the page in development mode. For production, you'll need to redeploy the site.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The site is automatically deployed to GitHub Pages when changes are pushed to the main branch. The GitHub Actions workflow handles the build and deployment process.
 
-## Learn More
+To manually deploy:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run build
+# or
+yarn build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+├── public/
+│   ├── photos/           # Photo files
+│   │   └── metadata.csv  # Photo metadata
+├── src/
+│   ├── app/              # Next.js app directory
+│   │   ├── page.tsx      # Home page
+│   │   └── globals.css   # Global styles
+│   ├── components/       # React components
+│   │   ├── Header.tsx    # Site header
+│   │   ├── PhotoCard.tsx # Individual photo card
+│   │   ├── PhotoGrid.tsx # Grid of photos
+│   │   └── PhotoModal.tsx # Full-screen preview modal
+│   └── utils/            # Utility functions
+│       └── photos.ts     # Photo loading and processing
+├── .github/workflows/    # GitHub Actions workflows
+│   └── deploy.yml        # Deployment workflow
+├── next.config.js        # Next.js configuration
+└── tailwind.config.js    # Tailwind CSS configuration
+```
 
-## Deploy on Vercel
+## Usage Instructions
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Viewing Photos
+- **Browse**: Scroll through the gallery to view all photos
+- **Hover**: Hover over a photo to see photographer information
+- **Click**: Click on a photo to open it in full-screen preview mode
+- **Navigate**: Use the arrow buttons or keyboard arrow keys to navigate between photos in preview mode
+- **Close**: Click the X button, press Escape, or click outside the photo to close the preview
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Searching
+- Use the search bar to find photos by photographer name, title, or description
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+MIT

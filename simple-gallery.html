@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>16 Pixels PhotoStation</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .photo-card {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      height: 250px;
+    }
+    .photo-info {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      padding: 1rem;
+      text-align: center;
+    }
+    .photo-card:hover .photo-info {
+      opacity: 1;
+    }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+    .pagination button {
+      padding: 0.5rem 1rem;
+      margin: 0 0.25rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.25rem;
+      background-color: white;
+      cursor: pointer;
+    }
+    .pagination button.active {
+      background-color: #3b82f6;
+      color: white;
+    }
+    .pagination button:hover:not(.active) {
+      background-color: #f3f4f6;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <header class="bg-white shadow-sm">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-gray-800">16 Pixels PhotoStation</h1>
+      <div class="flex items-center space-x-4">
+        <nav class="hidden md:flex space-x-6">
+          <a href="#" class="text-gray-600 hover:text-gray-900">Home</a>
+          <a href="#about" class="text-gray-600 hover:text-gray-900">About</a>
+          <a href="#contributors" class="text-gray-600 hover:text-gray-900">Contributors</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold text-gray-800 mb-4">Welcome to 16 Pixels PhotoStation</h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        Explore our collection of stunning photographs. Hover over any photo to see the photographer's details.
+      </p>
+      
+      <div class="max-w-md mx-auto mt-6">
+        <div class="relative">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Search by photographer..."
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            id="search-button"
+            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="photo-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <!-- Photos will be loaded here by JavaScript -->
+      <div class="text-center p-8 bg-gray-100 rounded-lg col-span-full">
+        <p class="text-gray-600">Loading photos...</p>
+      </div>
+    </div>
+    
+    <div id="pagination" class="pagination mt-8">
+      <!-- Pagination buttons will be added here by JavaScript -->
+    </div>
+  </main>
+
+  <footer class="bg-white mt-12 py-8 border-t">
+    <div class="container mx-auto px-4 text-center text-gray-600">
+      <p>&copy; 2025 16 Pixels PhotoStation. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Configuration
+    const photosPerPage = 20;
+    let currentPage = 1;
+    let allPhotos = [];
+    let filteredPhotos = [];
+    
+    // DOM elements
+    const photoGrid = document.getElementById('photo-grid');
+    const pagination = document.getElementById('pagination');
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
+    
+    // Load photos from CSV
+    async function loadPhotos() {
+      try {
+        const response = await fetch('public/photos/metadata.csv');
+        const csvData = await response.text();
+        
+        // Parse CSV
+        const lines = csvData.split('\n');
+        const headers = lines[0].split(',');
+        
+        // Process each line
+        allPhotos = [];
+        for (let i = 1; i < lines.length; i++) {
+          if (!lines[i].trim()) continue;
+          
+          const values = lines[i].split(',');
+          if (values.length < 2) continue; // Need at least id and filename
+          
+          const photo = {};
+          headers.forEach((header, index) => {
+            photo[header.trim()] = values[index]?.trim() || '';
+          });
+          
+          // Add image source
+          photo.src = `public/photos/${photo.filename}`;
+          
+          allPhotos.push(photo);
+        }
+        
+        console.log(`Loaded ${allPhotos.length} photos from CSV`);
+        
+        // Initialize with all photos
+        filteredPhotos = [...allPhotos];
+        renderPhotos();
+        renderPagination();
+      } catch (error) {
+        console.error('Error loading photos:', error);
+        photoGrid.innerHTML = '<div class="col-span-full text-center p-8 bg-red-50 rounded-lg"><h3 class="text-xl font-semibold text-red-600">Error loading photos</h3><p class="text-gray-600 mt-2">Please try refreshing the page.</p></div>';
+      }
+    }
+    
+    // Render photos for current page
+    function renderPhotos() {
+      // Clear grid
+      photoGrid.innerHTML = '';
+      
+      // Calculate page range
+      const startIndex = (currentPage - 1) * photosPerPage;
+      const endIndex = startIndex + photosPerPage;
+      const currentPhotos = filteredPhotos.slice(startIndex, endIndex);
+      
+      // Show message if no photos
+      if (currentPhotos.length === 0) {
+        photoGrid.innerHTML = '<div class="col-span-full text-center p-8 bg-gray-50 rounded-lg"><h3 class="text-xl font-semibold text-gray-600">No photos found</h3><p class="text-gray-500 mt-2">Try a different search term.</p></div>';
+        return;
+      }
+      
+      // Create photo cards
+      currentPhotos.forEach(photo => {
+        const photoCard = document.createElement('div');
+        photoCard.className = 'photo-card rounded-lg shadow-md overflow-hidden';
+        
+        photoCard.innerHTML = `
+          <div class="relative overflow-hidden h-full">
+            <img src="${photo.src}" alt="${photo.title || 'Photo'}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Not+Found'">
+            <div class="photo-info">
+              <h3 class="text-xl font-bold mb-1">${photo.title || 'Untitled'}</h3>
+              <p class="text-sm mb-2">by ${photo.photographer || 'Unknown'}</p>
+              <p class="text-xs">${photo.description || ''}</p>
+            </div>
+          </div>
+        `;
+        
+        photoGrid.appendChild(photoCard);
+      });
+    }
+    
+    // Render pagination controls
+    function renderPagination() {
+      pagination.innerHTML = '';
+      
+      const totalPages = Math.ceil(filteredPhotos.length / photosPerPage);
+      
+      // Previous button
+      const prevButton = document.createElement('button');
+      prevButton.innerHTML = '&laquo; Prev';
+      prevButton.disabled = currentPage === 1;
+      prevButton.className = currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : '';
+      prevButton.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderPhotos();
+          renderPagination();
+          window.scrollTo(0, 0);
+        }
+      });
+      pagination.appendChild(prevButton);
+      
+      // Page numbers (show max 5 pages)
+      const maxVisiblePages = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+      
+      if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+      
+      // First page
+      if (startPage > 1) {
+        const firstButton = document.createElement('button');
+        firstButton.textContent = '1';
+        firstButton.addEventListener('click', () => {
+          currentPage = 1;
+          renderPhotos();
+          renderPagination();
+          window.scrollTo(0, 0);
+        });
+        pagination.appendChild(firstButton);
+        
+        if (startPage > 2) {
+          const ellipsis = document.createElement('span');
+          ellipsis.textContent = '...';
+          ellipsis.className = 'px-3 py-2';
+          pagination.appendChild(ellipsis);
+        }
+      }
+      
+      // Page buttons
+      for (let i = startPage; i <= endPage; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i.toString();
+        if (i === currentPage) {
+          pageButton.className = 'active';
+        }
+        pageButton.addEventListener('click', () => {
+          currentPage = i;
+          renderPhotos();
+          renderPagination();
+          window.scrollTo(0, 0);
+        });
+        pagination.appendChild(pageButton);
+      }
+      
+      // Last page
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          const ellipsis = document.createElement('span');
+          ellipsis.textContent = '...';
+          ellipsis.className = 'px-3 py-2';
+          pagination.appendChild(ellipsis);
+        }
+        
+        const lastButton = document.createElement('button');
+        lastButton.textContent = totalPages.toString();
+        lastButton.addEventListener('click', () => {
+          currentPage = totalPages;
+          renderPhotos();
+          renderPagination();
+          window.scrollTo(0, 0);
+        });
+        pagination.appendChild(lastButton);
+      }
+      
+      // Next button
+      const nextButton = document.createElement('button');
+      nextButton.innerHTML = 'Next &raquo;';
+      nextButton.disabled = currentPage === totalPages;
+      nextButton.className = currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : '';
+      nextButton.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          renderPhotos();
+          renderPagination();
+          window.scrollTo(0, 0);
+        }
+      });
+      pagination.appendChild(nextButton);
+    }
+    
+    // Search functionality
+    function handleSearch() {
+      const query = searchInput.value.toLowerCase();
+      
+      if (query.trim() === '') {
+        filteredPhotos = [...allPhotos];
+      } else {
+        filteredPhotos = allPhotos.filter(photo => 
+          (photo.photographer && photo.photographer.toLowerCase().includes(query)) ||
+          (photo.title && photo.title.toLowerCase().includes(query)) ||
+          (photo.description && photo.description.toLowerCase().includes(query))
+        );
+      }
+      
+      currentPage = 1;
+      renderPhotos();
+      renderPagination();
+    }
+    
+    // Event listeners
+    searchButton.addEventListener('click', handleSearch);
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleSearch();
+      }
+    });
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', loadPhotos);
+  </script>
+</body>
+</html>

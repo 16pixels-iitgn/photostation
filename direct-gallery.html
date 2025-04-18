@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>16 Pixels PhotoStation - Direct Gallery</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .photo-card {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      height: 250px;
+    }
+    .photo-info {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      padding: 1rem;
+      text-align: center;
+    }
+    .photo-card:hover .photo-info {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <header class="bg-white shadow-sm">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-gray-800">16 Pixels PhotoStation</h1>
+      <div class="flex items-center space-x-4">
+        <nav class="hidden md:flex space-x-6">
+          <a href="#" class="text-gray-600 hover:text-gray-900">Home</a>
+          <a href="#about" class="text-gray-600 hover:text-gray-900">About</a>
+          <a href="#contributors" class="text-gray-600 hover:text-gray-900">Contributors</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold text-gray-800 mb-4">Welcome to 16 Pixels PhotoStation</h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        Explore our collection of stunning photographs. Hover over any photo to see the photographer's details.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <!-- Photo 1 -->
+      <div class="photo-card rounded-lg shadow-md overflow-hidden">
+        <div class="relative overflow-hidden h-full">
+          <img src="public/photos/IMG-20240609-WA0014.jpg" alt="Photo 1" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Not+Found'">
+          <div class="photo-info">
+            <h3 class="text-xl font-bold mb-1">Photo 1</h3>
+            <p class="text-sm mb-2">by Aarav Shah ME Ahmedabad GN22</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Photo 2 -->
+      <div class="photo-card rounded-lg shadow-md overflow-hidden">
+        <div class="relative overflow-hidden h-full">
+          <img src="public/photos/IMG-20240611-WA0010.jpg" alt="Photo 2" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Not+Found'">
+          <div class="photo-info">
+            <h3 class="text-xl font-bold mb-1">Photo 2</h3>
+            <p class="text-sm mb-2">by +91 93825 83546</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Photo 3 -->
+      <div class="photo-card rounded-lg shadow-md overflow-hidden">
+        <div class="relative overflow-hidden h-full">
+          <img src="public/photos/IMG-20240611-WA0011.jpg" alt="Photo 3" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Not+Found'">
+          <div class="photo-info">
+            <h3 class="text-xl font-bold mb-1">Photo 3</h3>
+            <p class="text-sm mb-2">by +91 85747 37005</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Photo 4 -->
+      <div class="photo-card rounded-lg shadow-md overflow-hidden">
+        <div class="relative overflow-hidden h-full">
+          <img src="public/photos/IMG-20240612-WA0017.jpg" alt="Photo 4" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Not+Found'">
+          <div class="photo-info">
+            <h3 class="text-xl font-bold mb-1">Photo 4</h3>
+            <p class="text-sm mb-2">by +91 97306 66352</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Photo 5 -->
+      <div class="photo-card rounded-lg shadow-md overflow-hidden">
+        <div class="relative overflow-hidden h-full">
+          <img src="public/photos/IMG-20240612-WA0024.jpg" alt="Photo 5" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Not+Found'">
+          <div class="photo-info">
+            <h3 class="text-xl font-bold mb-1">Photo 5</h3>
+            <p class="text-sm mb-2">by +91 93825 83546</p>
+            <p class="text-xs">Blend of colors went wild</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Photo 6 -->
+      <div class="photo-card rounded-lg shadow-md overflow-hidden">
+        <div class="relative overflow-hidden h-full">
+          <img src="public/photos/IMG-20240613-WA0014.jpg" alt="Photo 6" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Not+Found'">
+          <div class="photo-info">
+            <h3 class="text-xl font-bold mb-1">Photo 6</h3>
+            <p class="text-sm mb-2">by +91 93825 83546</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Photo 7 -->
+      <div class="photo-card rounded-lg shadow-md overflow-hidden">
+        <div class="relative overflow-hidden h-full">
+          <img src="public/photos/IMG-20240613-WA0016.jpg" alt="Photo 7" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Not+Found'">
+          <div class="photo-info">
+            <h3 class="text-xl font-bold mb-1">Photo 7</h3>
+            <p class="text-sm mb-2">by +91 63061 63249</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Photo 8 -->
+      <div class="photo-card rounded-lg shadow-md overflow-hidden">
+        <div class="relative overflow-hidden h-full">
+          <img src="public/photos/IMG-20240613-WA0017.jpg" alt="Photo 8" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Not+Found'">
+          <div class="photo-info">
+            <h3 class="text-xl font-bold mb-1">Photo 8</h3>
+            <p class="text-sm mb-2">by +91 63529 39015</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-white mt-12 py-8 border-t">
+    <div class="container mx-auto px-4 text-center text-gray-600">
+      <p>&copy; 2025 16 Pixels PhotoStation. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>

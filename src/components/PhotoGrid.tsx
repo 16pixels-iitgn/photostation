@@ -1,0 +1,144 @@
+"use client";
+
+import { useState } from 'react';
+import { Photo } from '@/utils/photos';
+import PhotoCard from './PhotoCard';
+import PhotoModal from './PhotoModal';
+
+interface PhotoGridProps {
+  photos: Photo[];
+}
+
+export default function PhotoGrid({ photos }: PhotoGridProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const photosPerPage = 20;
+
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(photos.length / photosPerPage);
+
+  // Get current photos
+  const indexOfLastPhoto = currentPage * photosPerPage;
+  const indexOfFirstPhoto = indexOfLastPhoto - photosPerPage;
+  const currentPhotos = photos.slice(indexOfFirstPhoto, indexOfLastPhoto);
+
+  // Change page
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+  // Open modal with photo
+  const handleOpenModal = (photo: Photo) => {
+    const index = currentPhotos.findIndex(p => p.id === photo.id);
+    setSelectedPhoto(photo);
+    setCurrentPhotoIndex(index);
+    setModalOpen(true);
+  };
+
+  // Close modal
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  // Navigate to previous photo
+  const handlePrevPhoto = () => {
+    const newIndex = (currentPhotoIndex - 1 + currentPhotos.length) % currentPhotos.length;
+    setCurrentPhotoIndex(newIndex);
+    setSelectedPhoto(currentPhotos[newIndex]);
+  };
+
+  // Navigate to next photo
+  const handleNextPhoto = () => {
+    const newIndex = (currentPhotoIndex + 1) % currentPhotos.length;
+    setCurrentPhotoIndex(newIndex);
+    setSelectedPhoto(currentPhotos[newIndex]);
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {currentPhotos.map((photo) => (
+          <PhotoCard
+            key={photo.id}
+            photo={photo}
+            onOpenModal={handleOpenModal}
+          />
+        ))}
+      </div>
+
+      {/* Photo Modal */}
+      <PhotoModal
+        isOpen={modalOpen}
+        onClose={handleCloseModal}
+        photo={selectedPhoto}
+        onPrev={handlePrevPhoto}
+        onNext={handleNextPhoto}
+      />
+
+      {/* Pagination */}
+      <div className="flex justify-center mt-8">
+        <nav className="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'}`}
+          >
+            <span className="sr-only">Previous</span>
+            &laquo; Prev
+          </button>
+
+          {/* Page numbers */}
+          <div className="hidden md:flex">
+            {[...Array(totalPages)].map((_, index) => {
+              // Show only a window of 5 pages around the current page
+              if (
+                index + 1 === 1 ||
+                index + 1 === totalPages ||
+                (index + 1 >= currentPage - 2 && index + 1 <= currentPage + 2)
+              ) {
+                return (
+                  <button
+                    key={index}
+                    onClick={() => paginate(index + 1)}
+                    className={`relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${currentPage === index + 1 ? 'text-blue-600 bg-blue-50' : 'text-gray-500 hover:bg-gray-50'}`}
+                  >
+                    {index + 1}
+                  </button>
+                );
+              } else if (
+                index + 1 === currentPage - 3 ||
+                index + 1 === currentPage + 3
+              ) {
+                return (
+                  <span
+                    key={index}
+                    className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
+                  >
+                    ...
+                  </span>
+                );
+              }
+              return null;
+            })}
+          </div>
+
+          {/* Mobile pagination */}
+          <span className="md:hidden relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+            {currentPage} / {totalPages}
+          </span>
+
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'}`}
+          >
+            <span className="sr-only">Next</span>
+            Next &raquo;
+          </button>
+        </nav>
+      </div>
+    </div>
+  );
+}

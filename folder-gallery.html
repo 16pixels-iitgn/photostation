@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>16 Pixels PhotoStation - Folder Gallery</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .photo-card {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      height: 250px;
+    }
+    .photo-info {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      padding: 1rem;
+      text-align: center;
+    }
+    .photo-card:hover .photo-info {
+      opacity: 1;
+    }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+    .pagination button {
+      padding: 0.5rem 1rem;
+      margin: 0 0.25rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.25rem;
+      background-color: white;
+      cursor: pointer;
+    }
+    .pagination button.active {
+      background-color: #3b82f6;
+      color: white;
+    }
+    .pagination button:hover:not(.active) {
+      background-color: #f3f4f6;
+    }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      overflow: auto;
+    }
+
+    .modal-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 20px;
+    }
+
+    .modal-image {
+      max-width: 90%;
+      max-height: 80vh;
+      object-fit: contain;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-info {
+      color: white;
+      text-align: center;
+      max-width: 600px;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: white;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    .close:hover {
+      color: #ccc;
+    }
+
+    .modal-nav {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 50px;
+      box-sizing: border-box;
+    }
+
+    .modal-nav button {
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translateY(-50%);
+    }
+
+    .modal-nav button:hover {
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <header class="bg-white shadow-sm">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-gray-800">16 Pixels PhotoStation</h1>
+      <div class="flex items-center space-x-4">
+        <nav class="hidden md:flex space-x-6">
+          <a href="#" class="text-gray-600 hover:text-gray-900">Home</a>
+          <a href="#about" class="text-gray-600 hover:text-gray-900">About</a>
+          <a href="#contributors" class="text-gray-600 hover:text-gray-900">Contributors</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold text-gray-800 mb-4">Welcome to 16 Pixels PhotoStation</h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        Explore our collection of stunning photographs. Hover over any photo to see the photographer's details, and click to open a larger preview.
+      </p>
+    </div>
+
+    <div id="photo-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <!-- Photos will be loaded here by JavaScript -->
+      <div class="text-center p-8 bg-gray-100 rounded-lg col-span-full">
+        <p class="text-gray-600">Loading photos...</p>
+      </div>
+    </div>
+
+    <div id="pagination" class="pagination mt-8">
+      <!-- Pagination buttons will be added here by JavaScript -->
+    </div>
+  </main>
+
+  <footer class="bg-white mt-12 py-8 border-t">
+    <div class="container mx-auto px-4 text-center text-gray-600">
+      <p>&copy; 2025 16 Pixels PhotoStation. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Photo Modal -->
+  <div id="photoModal" class="modal">
+    <span class="close">&times;</span>
+    <div class="modal-content">
+      <img id="modalImage" class="modal-image" src="" alt="">
+      <div id="modalInfo" class="modal-info">
+        <h2 id="modalTitle" class="text-xl font-bold mb-2"></h2>
+        <p id="modalPhotographer" class="text-sm mb-2"></p>
+        <p id="modalDescription" class="text-sm"></p>
+      </div>
+    </div>
+    <div class="modal-nav">
+      <button id="prevPhoto">&lsaquo;</button>
+      <button id="nextPhoto">&rsaquo;</button>
+    </div>
+  </div>
+
+  <script>
+    // Hardcoded list of photos with metadata from the CSV
+    const allPhotos = [
+      {
+        id: '1',
+        filename: 'IMG-20240609-WA0014.jpg',
+        photographer: 'Aarav Shah ME Ahmedabad GN22',
+        title: 'Photo 1',
+        description: '',
+        src: 'public/photos/IMG-20240609-WA0014.jpg'
+      },
+      {
+        id: '2',
+        filename: 'IMG-20240611-WA0010.jpg',
+        photographer: '+91 93825 83546',
+        title: 'Photo 2',
+        description: '',
+        src: 'public/photos/IMG-20240611-WA0010.jpg'
+      },
+      {
+        id: '3',
+        filename: 'IMG-20240611-WA0011.jpg',
+        photographer: '+91 85747 37005',
+        title: 'Photo 3',
+        description: '',
+        src: 'public/photos/IMG-20240611-WA0011.jpg'
+      },
+      {
+        id: '4',
+        filename: 'IMG-20240612-WA0017.jpg',
+        photographer: '+91 97306 66352',
+        title: 'Photo 4',
+        description: '',
+        src: 'public/photos/IMG-20240612-WA0017.jpg'
+      },
+      {
+        id: '5',
+        filename: 'IMG-20240612-WA0024.jpg',
+        photographer: '+91 93825 83546',
+        title: 'Photo 5',
+        description: 'Blend of colors went wild',
+        src: 'public/photos/IMG-20240612-WA0024.jpg'
+      },
+      {
+        id: '6',
+        filename: 'IMG-20240613-WA0014.jpg',
+        photographer: '+91 93825 83546',
+        title: 'Photo 6',
+        description: '',
+        src: 'public/photos/IMG-20240613-WA0014.jpg'
+      },
+      {
+        id: '7',
+        filename: 'IMG-20240613-WA0016.jpg',
+        photographer: '+91 63061 63249',
+        title: 'Photo 7',
+        description: '',
+        src: 'public/photos/IMG-20240613-WA0016.jpg'
+      },
+      {
+        id: '8',
+        filename: 'IMG-20240613-WA0017.jpg',
+        photographer: '+91 63529 39015',
+        title: 'Photo 8',
+        description: '',
+        src: 'public/photos/IMG-20240613-WA0017.jpg'
+      },
+      {
+        id: '9',
+        filename: 'IMG-20240614-WA0005.jpg',
+        photographer: '+91 97306 66352',
+        title: 'Photo 9',
+        description: '',
+        src: 'public/photos/IMG-20240614-WA0005.jpg'
+      },
+      {
+        id: '10',
+        filename: 'IMG-20240614-WA0007.jpg',
+        photographer: '+91 97306 66352',
+        title: 'Photo 10',
+        description: '',
+        src: 'public/photos/IMG-20240614-WA0007.jpg'
+      },
+      {
+        id: '11',
+        filename: 'IMG-20240617-WA0001.jpg',
+        photographer: 'Vedant GN23 SGG',
+        title: 'Photo 11',
+        description: '',
+        src: 'public/photos/IMG-20240617-WA0001.jpg'
+      },
+      {
+        id: '12',
+        filename: 'IMG-20240617-WA0003.jpg',
+        photographer: '+91 63061 63249',
+        title: 'Photo 12',
+        description: '',
+        src: 'public/photos/IMG-20240617-WA0003.jpg'
+      },
+      {
+        id: '13',
+        filename: 'IMG-20240618-WA0014.jpg',
+        photographer: '+91 97306 66352',
+        title: 'Photo 13',
+        description: 'Product Photography tried at home',
+        src: 'public/photos/IMG-20240618-WA0014.jpg'
+      },
+      {
+        id: '14',
+        filename: 'IMG-20240618-WA0012.jpg',
+        photographer: '+91 97306 66352',
+        title: 'Photo 14',
+        description: '',
+        src: 'public/photos/IMG-20240618-WA0012.jpg'
+      },
+      {
+        id: '15',
+        filename: 'IMG-20240618-WA0010.jpg',
+        photographer: '+91 97306 66352',
+        title: 'Photo 15',
+        description: '',
+        src: 'public/photos/IMG-20240618-WA0010.jpg'
+      },
+      {
+        id: '16',
+        filename: 'IMG-20240621-WA0025.jpg',
+        photographer: '+91 63061 63249',
+        title: 'Photo 16',
+        description: '',
+        src: 'public/photos/IMG-20240621-WA0025.jpg'
+      },
+      {
+        id: '17',
+        filename: 'IMG-20240622-WA0000.jpg',
+        photographer: 'Chandrabhan Patel',
+        title: 'Photo 17',
+        description: 'To everyone who came,',
+        src: 'public/photos/IMG-20240622-WA0000.jpg'
+      },
+      {
+        id: '18',
+        filename: 'IMG-20240622-WA0002.jpg',
+        photographer: 'Shreyas choudhary GN21',
+        title: 'Photo 18',
+        description: '',
+        src: 'public/photos/IMG-20240622-WA0002.jpg'
+      },
+      {
+        id: '19',
+        filename: 'IMG-20240622-WA0005.jpg',
+        photographer: 'Pranjal Gaur GN22',
+        title: 'Photo 19',
+        description: 'Struggle',
+        src: 'public/photos/IMG-20240622-WA0005.jpg'
+      },
+      {
+        id: '20',
+        filename: 'IMG-20240622-WA0007.jpg',
+        photographer: 'Pawan Seth GN22',
+        title: 'Photo 20',
+        description: '',
+        src: 'public/photos/IMG-20240622-WA0007.jpg'
+      }
+    ];
+
+    // Configuration
+    const photosPerPage = 8;
+    let currentPage = 1;
+    let filteredPhotos = [...allPhotos];
+
+    // DOM elements
+    const photoGrid = document.getElementById('photo-grid');
+    const pagination = document.getElementById('pagination');
+
+    // Modal elements
+    const modal = document.getElementById('photoModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalPhotographer = document.getElementById('modalPhotographer');
+    const modalDescription = document.getElementById('modalDescription');
+    const closeBtn = document.querySelector('.close');
+    const prevBtn = document.getElementById('prevPhoto');
+    const nextBtn = document.getElementById('nextPhoto');
+
+    let currentPhotoIndex = 0;
+    let currentModalPhotos = [];
+
+    // Open modal with photo
+    function openModal(photo, index, photos) {
+      modalImage.src = photo.src;
+      modalTitle.textContent = photo.title || 'Untitled';
+      modalPhotographer.textContent = `by ${photo.photographer || 'Unknown'}`;
+      modalDescription.textContent = photo.description || '';
+
+      currentPhotoIndex = index;
+      currentModalPhotos = photos;
+
+      modal.style.display = 'block';
+      document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+    }
+
+    // Close modal
+    function closeModal() {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto'; // Restore scrolling
+    }
+
+    // Navigate to previous photo
+    function showPrevPhoto() {
+      currentPhotoIndex = (currentPhotoIndex - 1 + currentModalPhotos.length) % currentModalPhotos.length;
+      const photo = currentModalPhotos[currentPhotoIndex];
+      modalImage.src = photo.src;
+      modalTitle.textContent = photo.title || 'Untitled';
+      modalPhotographer.textContent = `by ${photo.photographer || 'Unknown'}`;
+      modalDescription.textContent = photo.description || '';
+    }
+
+    // Navigate to next photo
+    function showNextPhoto() {
+      currentPhotoIndex = (currentPhotoIndex + 1) % currentModalPhotos.length;
+      const photo = currentModalPhotos[currentPhotoIndex];
+      modalImage.src = photo.src;
+      modalTitle.textContent = photo.title || 'Untitled';
+      modalPhotographer.textContent = `by ${photo.photographer || 'Unknown'}`;
+      modalDescription.textContent = photo.description || '';
+    }
+
+    // Event listeners for modal
+    closeBtn.addEventListener('click', closeModal);
+    prevBtn.addEventListener('click', showPrevPhoto);
+    nextBtn.addEventListener('click', showNextPhoto);
+
+    // Close modal when clicking outside the image
+    window.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (event) => {
+      if (modal.style.display === 'block') {
+        if (event.key === 'Escape') {
+          closeModal();
+        } else if (event.key === 'ArrowLeft') {
+          showPrevPhoto();
+        } else if (event.key === 'ArrowRight') {
+          showNextPhoto();
+        }
+      }
+    });
+
+    // Render photos for current page
+    function renderPhotos() {
+      // Clear grid
+      photoGrid.innerHTML = '';
+
+      // Calculate page range
+      const startIndex = (currentPage - 1) * photosPerPage;
+      const endIndex = startIndex + photosPerPage;
+      const currentPhotos = filteredPhotos.slice(startIndex, endIndex);
+
+      // Create photo cards
+      currentPhotos.forEach((photo, index) => {
+        const photoCard = document.createElement('div');
+        photoCard.className = 'photo-card rounded-lg shadow-md overflow-hidden';
+
+        photoCard.innerHTML = `
+          <div class="relative overflow-hidden h-full">
+            <img src="${photo.src}" alt="${photo.title || 'Photo'}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Not+Found'">
+            <div class="photo-info">
+              <h3 class="text-xl font-bold mb-1">${photo.title || 'Untitled'}</h3>
+              <p class="text-sm mb-2">by ${photo.photographer || 'Unknown'}</p>
+              <p class="text-xs">${photo.description || ''}</p>
+            </div>
+          </div>
+        `;
+
+        // Add click event to open modal
+        photoCard.addEventListener('click', () => {
+          openModal(photo, index, currentPhotos);
+        });
+
+        photoGrid.appendChild(photoCard);
+      });
+    }
+
+    // Render pagination controls
+    function renderPagination() {
+      pagination.innerHTML = '';
+
+      const totalPages = Math.ceil(filteredPhotos.length / photosPerPage);
+
+      // Previous button
+      const prevButton = document.createElement('button');
+      prevButton.innerHTML = '&laquo; Prev';
+      prevButton.disabled = currentPage === 1;
+      prevButton.className = currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : '';
+      prevButton.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderPhotos();
+          renderPagination();
+          window.scrollTo(0, 0);
+        }
+      });
+      pagination.appendChild(prevButton);
+
+      // Page numbers
+      for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i.toString();
+        if (i === currentPage) {
+          pageButton.className = 'active';
+        }
+        pageButton.addEventListener('click', () => {
+          currentPage = i;
+          renderPhotos();
+          renderPagination();
+          window.scrollTo(0, 0);
+        });
+        pagination.appendChild(pageButton);
+      }
+
+      // Next button
+      const nextButton = document.createElement('button');
+      nextButton.innerHTML = 'Next &raquo;';
+      nextButton.disabled = currentPage === totalPages;
+      nextButton.className = currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : '';
+      nextButton.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          renderPhotos();
+          renderPagination();
+          window.scrollTo(0, 0);
+        }
+      });
+      pagination.appendChild(nextButton);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      renderPhotos();
+      renderPagination();
+    });
+  </script>
+</body>
+</html>
