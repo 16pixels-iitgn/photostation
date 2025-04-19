@@ -2,7 +2,6 @@
 
 A beautiful, responsive photo gallery built with Next.js that displays photos with photographer information and is deployed on GitHub Pages.
 
-![16 Pixels PhotoStation](https://via.placeholder.com/800x400?text=16+Pixels+PhotoStation)
 
 ## Features
 
@@ -26,7 +25,7 @@ A beautiful, responsive photo gallery built with Next.js that displays photos wi
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/yourusername/photostation.git
+   git clone https://github.com/16pixels-iitgn/photostation.git
    cd photostation
    ```
 
@@ -54,10 +53,10 @@ A beautiful, responsive photo gallery built with Next.js that displays photos wi
 The metadata.csv file should have the following format:
 ```
 id,filename,photographer,title,description
-1,photo1.jpg,John Doe,Sunset at the Beach,A beautiful sunset captured at the beach
+1,photo1.jpg,John Doe,Sunset at the Beach,A beautiful sunset captured at the beach,date
 ```
 
-The gallery will automatically update when you refresh the page in development mode. For production, you'll need to redeploy the site.
+The gallery will automatically update when you refresh the page in development mode.  Upon push to github, the GitHub Actions workflow will build the site and deploy it to GitHub Pages.
 
 ## Deployment
 
@@ -110,6 +109,6 @@ yarn build
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
 
-MIT
+
+Curated by [Chandrabhan Patel](https://in.linkedin.com/in/cpatel321), Secretary 2024-25, 16 Pixels, IIT Gandhinagar
