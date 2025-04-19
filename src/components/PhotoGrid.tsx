@@ -20,6 +20,9 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
   const initialPage = pageParam ? parseInt(pageParam, 10) : 1;
   const [currentPage, setCurrentPage] = useState(initialPage);
 
+  // Add loading state
+  const [isLoading, setIsLoading] = useState(false);
+
   const photosPerPage = 20;
   const [filteredPhotos, setFilteredPhotos] = useState<Photo[]>(photos);
 
@@ -69,16 +72,25 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
   const indexOfFirstPhoto = indexOfLastPhoto - photosPerPage;
   const currentPhotos = filteredPhotos.slice(indexOfFirstPhoto, indexOfLastPhoto);
 
-  // Update modal when page changes
+  // Update modal when page changes and handle loading state
   useEffect(() => {
     // If modal is open and the selected photo is not in the current page, close the modal
     if (modalOpen && selectedPhoto && !currentPhotos.find(p => p.id === selectedPhoto.id)) {
       setModalOpen(false);
     }
+
+    // Reset loading state after a short delay to allow images to start loading
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 300);
+
+    return () => clearTimeout(timer);
   }, [currentPage, currentPhotos, modalOpen, selectedPhoto]);
 
   // Change page
   const paginate = (pageNumber: number) => {
+    // Set loading state
+    setIsLoading(true);
     setCurrentPage(pageNumber);
 
     // Update URL with the new page number
@@ -99,7 +111,7 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
     // Update URL without refreshing the page
     router.push(`/?${params.toString()}`, { scroll: false });
 
-    // Scroll to top
+    // Scroll to top with smooth behavior
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -187,6 +199,16 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
           >
             (Clear)
           </Link>
+        </div>
+      )}
+
+      {/* Loading overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-white bg-opacity-80 z-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mx-auto"></div>
+            <p className="mt-4 text-gray-700 font-medium">Loading photos...</p>
+          </div>
         </div>
       )}
 
