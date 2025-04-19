@@ -1,9 +1,6 @@
 import { getPhotos } from '@/utils/photos';
 import Link from 'next/link';
 
-// Get the base path based on environment
-const basePath = process.env.NODE_ENV === 'production' ? '/photostation' : '';
-
 export default async function ContributorsPage() {
   const photos = await getPhotos();
 
@@ -32,7 +29,7 @@ export default async function ContributorsPage() {
         {contributors.map((contributor) => (
           <Link
             key={contributor.name}
-            href={`${basePath}/?q=${encodeURIComponent(contributor.name)}`}
+            href={`/?q=${encodeURIComponent(contributor.name)}`}
             className="bg-white rounded-lg shadow-md p-6 block hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1 transition-transform"
           >
             <h2 className="text-xl font-semibold text-gray-800 mb-2">{contributor.name}</h2>

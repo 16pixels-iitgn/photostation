@@ -17,7 +17,7 @@ export default function Header() {
   return (
     <header className="bg-white shadow-sm">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href={`${basePath}/?q=`} className="flex items-center space-x-2">
+        <Link href="/" className="flex items-center space-x-2">
           <Image
             src={`${basePath}/logo.png`}
             alt="16 Pixels PhotoStation Logo"
@@ -30,13 +30,13 @@ export default function Header() {
         </Link>
         <div className="flex items-center space-x-4">
           <nav className="hidden md:flex space-x-6">
-            <Link href={`${basePath}/`} className="text-gray-600 hover:text-gray-900">
+            <Link href="/" className="text-gray-600 hover:text-gray-900">
               Home
             </Link>
-            <Link href={`${basePath}/about`} className="text-gray-600 hover:text-gray-900">
+            <Link href="/about" className="text-gray-600 hover:text-gray-900">
               About
             </Link>
-            <Link href={`${basePath}/contributors`} className="text-gray-600 hover:text-gray-900">
+            <Link href="/contributors" className="text-gray-600 hover:text-gray-900">
               Contributors
             </Link>
           </nav>
@@ -58,21 +58,21 @@ export default function Header() {
       <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isMenuOpen ? 'max-h-60' : 'max-h-0'}`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-md">
             <Link
-              href={`${basePath}/`}
+              href="/"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
               onClick={() => setIsMenuOpen(false)}
             >
               Home
             </Link>
             <Link
-              href={`${basePath}/about`}
+              href="/about"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
               onClick={() => setIsMenuOpen(false)}
             >
               About
             </Link>
             <Link
-              href={`${basePath}/contributors`}
+              href="/contributors"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
               onClick={() => setIsMenuOpen(false)}
             >

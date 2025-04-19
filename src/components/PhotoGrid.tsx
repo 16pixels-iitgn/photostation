@@ -2,12 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { Photo } from '@/utils/photos';
 import PhotoCard from './PhotoCard';
 import PhotoModal from './PhotoModal';
-
-// Get the base path based on environment
-const basePath = process.env.NODE_ENV === 'production' ? '/photostation' : '';
 
 interface PhotoGridProps {
   photos: Photo[];
@@ -88,7 +86,7 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
       {searchQuery && (
         <div className="text-center mt-4 mb-6 text-sm text-gray-600">
           Showing results for: <span className="font-semibold">"{searchQuery}"</span>
-          <a href={`${basePath}/?q=`} className="ml-2 text-blue-600 hover:text-blue-800">(Clear)</a>
+          <Link href="/?q=" className="ml-2 text-blue-600 hover:text-blue-800">(Clear)</Link>
         </div>
       )}
 
