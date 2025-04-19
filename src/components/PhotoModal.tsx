@@ -11,6 +11,29 @@ interface PhotoModalProps {
   onNext: () => void;
 }
 
+// Helper function to format date strings
+const formatDate = (dateString: string): string => {
+  // Try to parse the date string
+  try {
+    // Check if the date is in YYYY-MM-DD format
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      const date = new Date(dateString);
+      // Format as "Month Day, Year" (e.g., "January 1, 2023")
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+
+    // If it's already in a readable format or can't be parsed, return as is
+    return dateString;
+  } catch (error) {
+    // If there's an error parsing the date, return the original string
+    return dateString;
+  }
+};
+
 export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: PhotoModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -82,10 +105,18 @@ export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: P
           />
         </div>
 
-        <div className="bg-black bg-opacity-60 p-3 rounded-lg text-white text-center max-w-xl">
+        <div className="bg-black bg-opacity-60 p-4 rounded-lg text-white text-center max-w-xl">
           <h2 className="text-xl font-bold mb-1">{photo.title || ''}</h2>
-          <p className="text-sm mb-1">by {photo.photographer || 'Unknown'}</p>
-          {photo.description && <p className="text-xs">{photo.description}</p>}
+          <div className="flex flex-wrap justify-center items-center gap-2 mb-1">
+            <p className="text-sm">by {photo.photographer || 'Unknown'}</p>
+            {photo.date && (
+              <>
+                <span className="text-gray-400">•</span>
+                <p className="text-sm text-gray-300">{formatDate(photo.date)}</p>
+              </>
+            )}
+          </div>
+          {photo.description && <p className="text-xs mt-2">{photo.description}</p>}
         </div>
       </div>
 

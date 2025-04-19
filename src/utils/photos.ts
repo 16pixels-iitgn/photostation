@@ -12,6 +12,7 @@ export interface Photo {
   photographer: string;
   title: string;
   description: string;
+  date?: string; // Added date field as optional
   src: string;
 }
 
