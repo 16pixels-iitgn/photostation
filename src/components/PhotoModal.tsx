@@ -83,7 +83,7 @@ export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: P
         </div>
 
         <div className="bg-black bg-opacity-60 p-3 rounded-lg text-white text-center max-w-xl">
-          <h2 className="text-xl font-bold mb-1">{photo.title || 'Untitled'}</h2>
+          <h2 className="text-xl font-bold mb-1">{photo.title || ''}</h2>
           <p className="text-sm mb-1">by {photo.photographer || 'Unknown'}</p>
           {photo.description && <p className="text-xs">{photo.description}</p>}
         </div>

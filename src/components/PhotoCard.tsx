@@ -23,7 +23,7 @@ export default function PhotoCard({ photo, onOpenModal }: PhotoCardProps) {
 
         {/* Info shown on hover */}
         <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <h3 className="text-xl font-bold mb-1">{photo.title || 'Untitled'}</h3>
+          <h3 className="text-xl font-bold mb-1">{photo.title || ''}</h3>
           <p className="text-sm mb-2">by {photo.photographer || 'Unknown'}</p>
           <p className="text-xs text-center">{photo.description || ''}</p>
         </div>

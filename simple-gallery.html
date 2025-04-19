@@ -203,7 +203,7 @@
           <div class="relative overflow-hidden h-full">
             <img src="${photo.src}" alt="${photo.title || 'Photo'}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x300?text=Image+Not+Found'">
             <div class="photo-info">
-              <h3 class="text-xl font-bold mb-1">${photo.title || 'Untitled'}</h3>
+              <h3 class="text-xl font-bold mb-1">${photo.title || ''}</h3>
               <p class="text-sm mb-2">by ${photo.photographer || 'Unknown'}</p>
               <p class="text-xs">${photo.description || ''}</p>
             </div>
