@@ -13,7 +13,17 @@ interface PhotoGridProps {
 
 export default function PhotoGrid({ photos }: PhotoGridProps) {
   const searchParams = useSearchParams();
-  const [currentPage, setCurrentPage] = useState(1);
+
+  // Initialize current page from localStorage or default to 1
+  const [currentPage, setCurrentPage] = useState(() => {
+    // Only run in client-side
+    if (typeof window !== 'undefined') {
+      const savedPage = localStorage.getItem('currentPhotoPage');
+      return savedPage ? parseInt(savedPage, 10) : 1;
+    }
+    return 1;
+  });
+
   const photosPerPage = 20;
   const [filteredPhotos, setFilteredPhotos] = useState<Photo[]>(photos);
 
@@ -48,7 +58,8 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
       }
 
       setFilteredPhotos(filtered);
-      setCurrentPage(1); // Reset to first page when search changes
+      // Reset to first page when search changes and update localStorage
+      paginate(1);
     } else {
       setFilteredPhotos(photos);
     }
@@ -71,7 +82,13 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
   }, [currentPage, currentPhotos, modalOpen, selectedPhoto]);
 
   // Change page
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    // Save to localStorage
+    localStorage.setItem('currentPhotoPage', pageNumber.toString());
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Open modal with photo
   const handleOpenModal = (photo: Photo) => {
@@ -91,7 +108,7 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
     // If we're at the first photo and not on the first page, go to previous page
     if (currentPhotoIndex === 0 && currentPage > 1) {
       const newPage = currentPage - 1;
-      setCurrentPage(newPage);
+      paginate(newPage);
 
       // Calculate the index of the last photo on the previous page
       const photosOnPrevPage = Math.min(photosPerPage, filteredPhotos.length - (newPage - 1) * photosPerPage);
@@ -119,7 +136,7 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
     // If we're at the last photo and not on the last page, go to next page
     if (currentPhotoIndex === currentPhotos.length - 1 && currentPage < totalPages) {
       const newPage = currentPage + 1;
-      setCurrentPage(newPage);
+      paginate(newPage);
 
       // On the next page, show the first photo
       const newIndex = 0;
@@ -188,7 +205,10 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
         <div className="flex justify-center mt-8">
           <nav className="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
           <button
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            onClick={() => {
+              const newPage = Math.max(currentPage - 1, 1);
+              paginate(newPage);
+            }}
             disabled={currentPage === 1}
             className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'}`}
           >
@@ -237,7 +257,10 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
           </span>
 
           <button
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            onClick={() => {
+              const newPage = Math.min(currentPage + 1, totalPages);
+              paginate(newPage);
+            }}
             disabled={currentPage === totalPages}
             className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'}`}
           >
