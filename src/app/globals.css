@@ -33,3 +33,17 @@ body {
   position: relative;
   z-index: 0;
 }
+
+/* Search input placeholder styles */
+::placeholder {
+  color: #9ca3af; /* text-gray-400 */
+  opacity: 1;
+}
+
+:-ms-input-placeholder {
+  color: #9ca3af; /* text-gray-400 */
+}
+
+::-ms-input-placeholder {
+  color: #9ca3af; /* text-gray-400 */
+}

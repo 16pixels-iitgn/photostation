@@ -1,14 +1,23 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 
 export default function Header() {
   return (
     <header className="bg-white shadow-sm">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-gray-800">
-          16 Pixels PhotoStation
+        <Link href="/?q=" className="flex items-center space-x-2">
+          <Image
+            src="/logo.png"
+            alt="16 Pixels PhotoStation Logo"
+            width={48}
+            height={48}
+            className="rounded-md object-contain"
+            priority
+          />
+          <span className="text-2xl font-bold text-gray-800 hidden sm:inline">16 Pixels PhotoStation</span>
         </Link>
         <div className="flex items-center space-x-4">
           <nav className="hidden md:flex space-x-6">
