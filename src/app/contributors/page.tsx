@@ -29,7 +29,7 @@ export default async function ContributorsPage() {
         {contributors.map((contributor) => (
           <Link
             key={contributor.name}
-            href={`/?q=${encodeURIComponent(contributor.name)}`}
+            href={`/?q=${encodeURIComponent(contributor.name)}&exact=true`}
             className="bg-white rounded-lg shadow-md p-6 block hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1 transition-transform"
           >
             <h2 className="text-xl font-semibold text-gray-800 mb-2">{contributor.name}</h2>

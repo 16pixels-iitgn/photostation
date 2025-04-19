@@ -25,13 +25,28 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
   // Handle search filtering on the client side
   useEffect(() => {
     const searchQuery = searchParams.get('q') || '';
+    const exactMatch = searchParams.get('exact') === 'true';
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      const filtered = photos.filter(photo =>
-        (photo.photographer && photo.photographer.toLowerCase().includes(query)) ||
-        (photo.title && photo.title.toLowerCase().includes(query)) ||
-        (photo.description && photo.description.toLowerCase().includes(query))
-      );
+      let filtered;
+
+      if (exactMatch) {
+        // Exact match - only match whole words/names
+        filtered = photos.filter(photo =>
+          (photo.photographer && photo.photographer.toLowerCase() === query) ||
+          (photo.title && photo.title.toLowerCase() === query) ||
+          (photo.description && photo.description.toLowerCase() === query)
+        );
+      } else {
+        // Substring match - default behavior
+        filtered = photos.filter(photo =>
+          (photo.photographer && photo.photographer.toLowerCase().includes(query)) ||
+          (photo.title && photo.title.toLowerCase().includes(query)) ||
+          (photo.description && photo.description.toLowerCase().includes(query))
+        );
+      }
+
       setFilteredPhotos(filtered);
       setCurrentPage(1); // Reset to first page when search changes
     } else {
@@ -77,8 +92,9 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
     setSelectedPhoto(currentPhotos[newIndex]);
   };
 
-  // Get the current search query
+  // Get the current search query and exact match parameter
   const searchQuery = searchParams.get('q') || '';
+  const exactMatch = searchParams.get('exact') === 'true';
 
   return (
     <div className="space-y-8">
@@ -86,7 +102,7 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
       {searchQuery && (
         <div className="text-center mt-4 mb-6 text-sm text-gray-600">
           Showing results for: <span className="font-semibold">"{searchQuery}"</span>
-          <Link href="/?q=" className="ml-2 text-blue-600 hover:text-blue-800">(Clear)</Link>
+          <Link href={exactMatch ? '/?exact=true' : '/'} className="ml-2 text-blue-600 hover:text-blue-800">(Clear)</Link>
         </div>
       )}
 
