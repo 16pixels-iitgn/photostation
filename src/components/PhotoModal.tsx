@@ -11,29 +11,6 @@ interface PhotoModalProps {
   onNext: () => void;
 }
 
-// Helper function to format date strings
-const formatDate = (dateString: string): string => {
-  // Try to parse the date string
-  try {
-    // Check if the date is in YYYY-MM-DD format
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-      const date = new Date(dateString);
-      // Format as "Month Day, Year" (e.g., "January 1, 2023")
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-    }
-
-    // If it's already in a readable format or can't be parsed, return as is
-    return dateString;
-  } catch (error) {
-    // If there's an error parsing the date, return the original string
-    return dateString;
-  }
-};
-
 export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: PhotoModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -112,7 +89,7 @@ export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: P
             {photo.date && (
               <>
                 <span className="text-gray-400">•</span>
-                <p className="text-sm text-gray-300">{formatDate(photo.date)}</p>
+                <p className="text-sm text-gray-300">{photo.date}</p>
               </>
             )}
           </div>
