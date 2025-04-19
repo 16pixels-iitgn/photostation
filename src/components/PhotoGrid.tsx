@@ -156,7 +156,31 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
     // If we're at the first photo and not on the first page, go to previous page
     if (currentPhotoIndex === 0 && currentPage > 1) {
       const newPage = currentPage - 1;
-      paginate(newPage);
+
+      // Set loading state
+      setIsLoading(true);
+      setCurrentPage(newPage);
+
+      // Update URL with the new page number
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('page', newPage.toString());
+
+      // Preserve other query parameters
+      const query = searchParams.get('q');
+      if (query) {
+        params.set('q', query);
+      }
+
+      const exact = searchParams.get('exact');
+      if (exact) {
+        params.set('exact', exact);
+      }
+
+      // Update URL without refreshing the page
+      router.push(`/?${params.toString()}`, { scroll: false });
+
+      // Scroll to top with smooth behavior
+      window.scrollTo({ top: 0, behavior: 'smooth' });
 
       // Calculate the index of the last photo on the previous page
       const photosOnPrevPage = Math.min(photosPerPage, filteredPhotos.length - (newPage - 1) * photosPerPage);
@@ -168,12 +192,23 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
           (newPage - 1) * photosPerPage,
           newPage * photosPerPage
         );
-        setCurrentPhotoIndex(newIndex);
-        setSelectedPhoto(prevPagePhotos[newIndex]);
-      }, 0);
-    } else {
+
+        // Make sure we have photos on the previous page
+        if (prevPagePhotos.length > 0) {
+          setCurrentPhotoIndex(newIndex);
+          setSelectedPhoto(prevPagePhotos[newIndex]);
+          // Keep the modal open for a seamless experience
+          setModalOpen(true);
+        }
+      }, 500); // Increased timeout to ensure page change is complete
+    } else if (currentPhotoIndex > 0) {
       // Standard behavior - previous photo on same page
-      const newIndex = (currentPhotoIndex - 1 + currentPhotos.length) % currentPhotos.length;
+      const newIndex = currentPhotoIndex - 1;
+      setCurrentPhotoIndex(newIndex);
+      setSelectedPhoto(currentPhotos[newIndex]);
+    } else {
+      // We're at the first photo on the first page, loop to the last photo
+      const newIndex = currentPhotos.length - 1;
       setCurrentPhotoIndex(newIndex);
       setSelectedPhoto(currentPhotos[newIndex]);
     }
@@ -184,7 +219,31 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
     // If we're at the last photo and not on the last page, go to next page
     if (currentPhotoIndex === currentPhotos.length - 1 && currentPage < totalPages) {
       const newPage = currentPage + 1;
-      paginate(newPage);
+
+      // Set loading state
+      setIsLoading(true);
+      setCurrentPage(newPage);
+
+      // Update URL with the new page number
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('page', newPage.toString());
+
+      // Preserve other query parameters
+      const query = searchParams.get('q');
+      if (query) {
+        params.set('q', query);
+      }
+
+      const exact = searchParams.get('exact');
+      if (exact) {
+        params.set('exact', exact);
+      }
+
+      // Update URL without refreshing the page
+      router.push(`/?${params.toString()}`, { scroll: false });
+
+      // Scroll to top with smooth behavior
+      window.scrollTo({ top: 0, behavior: 'smooth' });
 
       // On the next page, show the first photo
       const newIndex = 0;
@@ -195,14 +254,24 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
           (newPage - 1) * photosPerPage,
           newPage * photosPerPage
         );
-        setCurrentPhotoIndex(newIndex);
-        setSelectedPhoto(nextPagePhotos[newIndex]);
-      }, 0);
-    } else {
+
+        // Make sure we have photos on the next page
+        if (nextPagePhotos.length > 0) {
+          setCurrentPhotoIndex(newIndex);
+          setSelectedPhoto(nextPagePhotos[newIndex]);
+          // Keep the modal open for a seamless experience
+          setModalOpen(true);
+        }
+      }, 500); // Increased timeout to ensure page change is complete
+    } else if (currentPhotoIndex < currentPhotos.length - 1) {
       // Standard behavior - next photo on same page
-      const newIndex = (currentPhotoIndex + 1) % currentPhotos.length;
+      const newIndex = currentPhotoIndex + 1;
       setCurrentPhotoIndex(newIndex);
       setSelectedPhoto(currentPhotos[newIndex]);
+    } else {
+      // We're at the last photo on the last page, loop back to the first photo
+      setCurrentPhotoIndex(0);
+      setSelectedPhoto(currentPhotos[0]);
     }
   };
 
