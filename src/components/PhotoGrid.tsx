@@ -52,14 +52,16 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
         filtered = photos.filter(photo =>
           (photo.photographer && photo.photographer.toLowerCase() === query) ||
           (photo.title && photo.title.toLowerCase() === query) ||
-          (photo.description && photo.description.toLowerCase() === query)
+          (photo.description && photo.description.toLowerCase() === query) ||
+          (photo.date && photo.date.toLowerCase() === query)
         );
       } else {
         // Substring match - default behavior
         filtered = photos.filter(photo =>
           (photo.photographer && photo.photographer.toLowerCase().includes(query)) ||
           (photo.title && photo.title.toLowerCase().includes(query)) ||
-          (photo.description && photo.description.toLowerCase().includes(query))
+          (photo.description && photo.description.toLowerCase().includes(query)) ||
+          (photo.date && photo.date.toLowerCase().includes(query))
         );
       }
 

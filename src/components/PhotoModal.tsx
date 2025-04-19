@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { Photo } from '@/utils/photos';
+import { useRouter } from 'next/navigation';
 
 interface PhotoModalProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ interface PhotoModalProps {
 
 export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: PhotoModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   // Handle keyboard navigation
   useEffect(() => {
@@ -85,11 +87,34 @@ export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: P
         <div className="bg-black bg-opacity-60 p-4 rounded-lg text-white text-center max-w-xl">
           <h2 className="text-xl font-bold mb-1">{photo.title || ''}</h2>
           <div className="flex flex-wrap justify-center items-center gap-2 mb-1">
-            <p className="text-sm">by {photo.photographer || 'Unknown'}</p>
+            <p className="text-sm">by
+              <button
+                className="text-blue-400 hover:text-blue-300 hover:underline ml-1 focus:outline-none transition-colors duration-200"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClose();
+                  router.push(`/?q=${encodeURIComponent(photo.photographer || 'Unknown')}&exact=true&page=1`);
+                }}
+                title={`Search for photos by ${photo.photographer || 'Unknown'}`}
+              >
+                {photo.photographer || 'Unknown'}
+              </button>
+            </p>
             {photo.date && (
               <>
                 <span className="text-gray-400">•</span>
-                <p className="text-sm text-gray-300">{photo.date}</p>
+                <button
+                  className="text-sm text-gray-300 hover:text-blue-300 hover:underline focus:outline-none transition-colors duration-200"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onClose();
+                    // Use the date field for search with exact matching
+                    router.push(`/?q=${encodeURIComponent(photo.date || '')}&exact=true&page=1`);
+                  }}
+                  title={`Search for photos from ${photo.date}`}
+                >
+                  {photo.date}
+                </button>
               </>
             )}
           </div>

@@ -1,5 +1,6 @@
 import PhotoGrid from '@/components/PhotoGrid';
 import SearchBar from '@/components/SearchBar';
+import VisitorCounter from '@/components/VisitorCounter';
 import { getPhotos } from '@/utils/photos';
 
 // Static page with client-side search handling
@@ -10,10 +11,12 @@ export default async function Home() {
 
   return (
     <div className="space-y-8">
+      {/* Hidden visitor counter */}
+      <VisitorCounter />
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4 transition-colors duration-300">Welcome to 16 Pixels PhotoStation</h1>
         <p className="text-lg text-gray-600 dark:text-gray-200 max-w-2xl mx-auto mb-6 transition-colors duration-300">
-          Explore our collection of stunning photographs. Hover over any photo to see the photographer's details, and click to open a larger preview.
+          Explore our collection of stunning photographs.
         </p>
         <SearchBar />
       </div>
