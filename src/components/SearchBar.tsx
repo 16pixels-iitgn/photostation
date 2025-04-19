@@ -3,6 +3,9 @@
 import { useState, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+// Get the base path based on environment
+const basePath = process.env.NODE_ENV === 'production' ? '/photostation' : '';
+
 export default function SearchBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -28,7 +31,7 @@ export default function SearchBar() {
     }
 
     // Navigate to the same page with updated query parameters
-    router.push(`/?${params.toString()}`);
+    router.push(`${basePath}/?${params.toString()}`);
   }, [searchQuery, router, searchParams]);
 
   return (
