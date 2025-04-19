@@ -62,6 +62,14 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
   const indexOfFirstPhoto = indexOfLastPhoto - photosPerPage;
   const currentPhotos = filteredPhotos.slice(indexOfFirstPhoto, indexOfLastPhoto);
 
+  // Update modal when page changes
+  useEffect(() => {
+    // If modal is open and the selected photo is not in the current page, close the modal
+    if (modalOpen && selectedPhoto && !currentPhotos.find(p => p.id === selectedPhoto.id)) {
+      setModalOpen(false);
+    }
+  }, [currentPage, currentPhotos, modalOpen, selectedPhoto]);
+
   // Change page
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
@@ -80,16 +88,57 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
 
   // Navigate to previous photo
   const handlePrevPhoto = () => {
-    const newIndex = (currentPhotoIndex - 1 + currentPhotos.length) % currentPhotos.length;
-    setCurrentPhotoIndex(newIndex);
-    setSelectedPhoto(currentPhotos[newIndex]);
+    // If we're at the first photo and not on the first page, go to previous page
+    if (currentPhotoIndex === 0 && currentPage > 1) {
+      const newPage = currentPage - 1;
+      setCurrentPage(newPage);
+
+      // Calculate the index of the last photo on the previous page
+      const photosOnPrevPage = Math.min(photosPerPage, filteredPhotos.length - (newPage - 1) * photosPerPage);
+      const newIndex = photosOnPrevPage - 1;
+
+      // We need to wait for the page change to update currentPhotos
+      setTimeout(() => {
+        const prevPagePhotos = filteredPhotos.slice(
+          (newPage - 1) * photosPerPage,
+          newPage * photosPerPage
+        );
+        setCurrentPhotoIndex(newIndex);
+        setSelectedPhoto(prevPagePhotos[newIndex]);
+      }, 0);
+    } else {
+      // Standard behavior - previous photo on same page
+      const newIndex = (currentPhotoIndex - 1 + currentPhotos.length) % currentPhotos.length;
+      setCurrentPhotoIndex(newIndex);
+      setSelectedPhoto(currentPhotos[newIndex]);
+    }
   };
 
   // Navigate to next photo
   const handleNextPhoto = () => {
-    const newIndex = (currentPhotoIndex + 1) % currentPhotos.length;
-    setCurrentPhotoIndex(newIndex);
-    setSelectedPhoto(currentPhotos[newIndex]);
+    // If we're at the last photo and not on the last page, go to next page
+    if (currentPhotoIndex === currentPhotos.length - 1 && currentPage < totalPages) {
+      const newPage = currentPage + 1;
+      setCurrentPage(newPage);
+
+      // On the next page, show the first photo
+      const newIndex = 0;
+
+      // We need to wait for the page change to update currentPhotos
+      setTimeout(() => {
+        const nextPagePhotos = filteredPhotos.slice(
+          (newPage - 1) * photosPerPage,
+          newPage * photosPerPage
+        );
+        setCurrentPhotoIndex(newIndex);
+        setSelectedPhoto(nextPagePhotos[newIndex]);
+      }, 0);
+    } else {
+      // Standard behavior - next photo on same page
+      const newIndex = (currentPhotoIndex + 1) % currentPhotos.length;
+      setCurrentPhotoIndex(newIndex);
+      setSelectedPhoto(currentPhotos[newIndex]);
+    }
   };
 
   // Get the current search query and exact match parameter
