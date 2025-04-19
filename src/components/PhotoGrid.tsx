@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Photo } from '@/utils/photos';
 import PhotoCard from './PhotoCard';
@@ -13,16 +13,12 @@ interface PhotoGridProps {
 
 export default function PhotoGrid({ photos }: PhotoGridProps) {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
-  // Initialize current page from localStorage or default to 1
-  const [currentPage, setCurrentPage] = useState(() => {
-    // Only run in client-side
-    if (typeof window !== 'undefined') {
-      const savedPage = localStorage.getItem('currentPhotoPage');
-      return savedPage ? parseInt(savedPage, 10) : 1;
-    }
-    return 1;
-  });
+  // Get page from URL or default to 1
+  const pageParam = searchParams.get('page');
+  const initialPage = pageParam ? parseInt(pageParam, 10) : 1;
+  const [currentPage, setCurrentPage] = useState(initialPage);
 
   const photosPerPage = 20;
   const [filteredPhotos, setFilteredPhotos] = useState<Photo[]>(photos);
@@ -84,8 +80,25 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
   // Change page
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
-    // Save to localStorage
-    localStorage.setItem('currentPhotoPage', pageNumber.toString());
+
+    // Update URL with the new page number
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', pageNumber.toString());
+
+    // Preserve other query parameters like search and exact match
+    const query = searchParams.get('q');
+    if (query) {
+      params.set('q', query);
+    }
+
+    const exact = searchParams.get('exact');
+    if (exact) {
+      params.set('exact', exact);
+    }
+
+    // Update URL without refreshing the page
+    router.push(`/?${params.toString()}`, { scroll: false });
+
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -168,7 +181,12 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
       {searchQuery && (
         <div className="text-center mt-4 mb-6 text-sm text-gray-600">
           Showing results for: <span className="font-semibold">"{searchQuery}"</span>
-          <Link href={exactMatch ? '/?exact=true' : '/'} className="ml-2 text-blue-600 hover:text-blue-800">(Clear)</Link>
+          <Link
+            href={`/?page=${currentPage}${exactMatch ? '&exact=true' : ''}`}
+            className="ml-2 text-blue-600 hover:text-blue-800"
+          >
+            (Clear)
+          </Link>
         </div>
       )}
 
