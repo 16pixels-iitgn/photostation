@@ -5,13 +5,31 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --text-primary: #333333;
+  --text-secondary: #6b7280;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --nav-bg: #ffffff;
+  --nav-border: #e5e7eb;
+  --modal-bg: rgba(0, 0, 0, 0.75);
+  --modal-content-bg: #ffffff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #121212;
+  --foreground: #e5e7eb;
+  --card-bg: #1f1f1f;
+  --card-border: #2d2d2d;
+  --text-primary: #e5e7eb;
+  --text-secondary: #9ca3af;
+  --accent: #3b82f6;
+  --accent-hover: #60a5fa;
+  --nav-bg: #1a1a1a;
+  --nav-border: #2d2d2d;
+  --modal-bg: rgba(0, 0, 0, 0.9);
+  --modal-content-bg: #1f1f1f;
 }
 
 html {
@@ -25,6 +43,7 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Modal styles */
@@ -44,10 +63,23 @@ body {
   opacity: 1;
 }
 
+.dark ::placeholder {
+  color: #d1d5db; /* text-gray-300 */
+  opacity: 1;
+}
+
 :-ms-input-placeholder {
   color: #9ca3af; /* text-gray-400 */
 }
 
+.dark :-ms-input-placeholder {
+  color: #d1d5db; /* text-gray-300 */
+}
+
 ::-ms-input-placeholder {
   color: #9ca3af; /* text-gray-400 */
+}
+
+.dark ::-ms-input-placeholder {
+  color: #d1d5db; /* text-gray-300 */
 }

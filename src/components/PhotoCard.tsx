@@ -10,7 +10,7 @@ interface PhotoCardProps {
 export default function PhotoCard({ photo, onOpenModal }: PhotoCardProps) {
   return (
     <div
-      className="relative overflow-hidden rounded-lg shadow-md group cursor-pointer"
+      className="relative overflow-hidden rounded-lg shadow-md dark:shadow-gray-800 group cursor-pointer bg-white dark:bg-gray-800 transition-colors duration-300"
       onClick={() => onOpenModal(photo)}
     >
       <div className="aspect-square relative overflow-hidden">

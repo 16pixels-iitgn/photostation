@@ -283,11 +283,11 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
     <div className="space-y-8">
       {/* Search results indicator */}
       {searchQuery && (
-        <div className="text-center mt-4 mb-6 text-sm text-gray-600">
+        <div className="text-center mt-4 mb-6 text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
           Showing results for: <span className="font-semibold">"{searchQuery}"</span>
           <Link
             href={`/?page=${currentPage}${exactMatch ? '&exact=true' : ''}`}
-            className="ml-2 text-blue-600 hover:text-blue-800"
+            className="ml-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-300"
           >
             (Clear)
           </Link>
@@ -296,19 +296,19 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
 
       {/* Loading overlay - only shown during page transitions */}
       {isLoading && (
-        <div className="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center">
-          <div className="text-center p-8 bg-white rounded-lg shadow-lg">
+        <div className="fixed inset-0 bg-white dark:bg-gray-900 bg-opacity-90 dark:bg-opacity-90 z-50 flex items-center justify-center transition-colors duration-300">
+          <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg transition-colors duration-300">
             <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-blue-500 mx-auto"></div>
-            <p className="mt-6 text-gray-700 text-lg font-medium">Loading photos...</p>
-            <p className="mt-2 text-gray-500 text-sm">Please wait while we prepare the next page</p>
+            <p className="mt-6 text-gray-700 dark:text-gray-200 text-lg font-medium transition-colors duration-300">Loading photos...</p>
+            <p className="mt-2 text-gray-500 dark:text-gray-400 text-sm transition-colors duration-300">Please wait while we prepare the next page</p>
           </div>
         </div>
       )}
 
       {filteredPhotos.length === 0 ? (
-        <div className="text-center p-8 bg-yellow-50 rounded-lg">
-          <h2 className="text-xl font-semibold text-yellow-600 mb-2">No photos found</h2>
-          <p className="text-gray-600">
+        <div className="text-center p-8 bg-yellow-50 dark:bg-yellow-900 rounded-lg transition-colors duration-300">
+          <h2 className="text-xl font-semibold text-yellow-600 dark:text-yellow-400 mb-2 transition-colors duration-300">No photos found</h2>
+          <p className="text-gray-600 dark:text-gray-300 transition-colors duration-300">
             No photos match your search criteria. Try a different search term.
           </p>
         </div>
@@ -343,7 +343,7 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
               paginate(newPage);
             }}
             disabled={currentPage === 1}
-            className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'}`}
+            className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium transition-colors duration-300 ${currentPage === 1 ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
           >
             <span className="sr-only">Previous</span>
             &laquo; Prev
@@ -362,7 +362,7 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
                   <button
                     key={index}
                     onClick={() => paginate(index + 1)}
-                    className={`relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium ${currentPage === index + 1 ? 'text-blue-600 bg-blue-50' : 'text-gray-500 hover:bg-gray-50'}`}
+                    className={`relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium transition-colors duration-300 ${currentPage === index + 1 ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                   >
                     {index + 1}
                   </button>
@@ -374,7 +374,7 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
                 return (
                   <span
                     key={index}
-                    className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
+                    className="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-400 transition-colors duration-300"
                   >
                     ...
                   </span>
@@ -385,7 +385,7 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
           </div>
 
           {/* Mobile pagination */}
-          <span className="md:hidden relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+          <span className="md:hidden relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-400 transition-colors duration-300">
             {currentPage} / {totalPages}
           </span>
 
@@ -395,7 +395,7 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
               paginate(newPage);
             }}
             disabled={currentPage === totalPages}
-            className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'}`}
+            className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium transition-colors duration-300 ${currentPage === totalPages ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
           >
             <span className="sr-only">Next</span>
             Next &raquo;
@@ -407,37 +407,37 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
       {/* Collection Info and Footer */}
       <footer className="mt-12">
         {/* Collection Stats */}
-        <div className="p-6 bg-gray-100 border border-gray-200 rounded-lg shadow-sm">
-          <h3 className="text-xl font-semibold mb-4 text-gray-900">Collection Info</h3>
+        <div className="p-6 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm transition-colors duration-300">
+          <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100 transition-colors duration-300">Collection Info</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white p-4 rounded-lg text-center shadow-sm border border-gray-200">
-              <p className="text-3xl font-bold text-gray-900">{photos.length}</p>
-              <p className="text-sm text-gray-600 mt-1 font-medium">Total Photos</p>
+            <div className="bg-white dark:bg-gray-700 p-4 rounded-lg text-center shadow-sm border border-gray-200 dark:border-gray-600 transition-colors duration-300">
+              <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 transition-colors duration-300">{photos.length}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 font-medium transition-colors duration-300">Total Photos</p>
             </div>
-            <div className="bg-white p-4 rounded-lg text-center shadow-sm border border-gray-200">
-              <p className="text-3xl font-bold text-gray-900">{new Set(photos.map(photo => photo.photographer)).size}</p>
-              <p className="text-sm text-gray-600 mt-1 font-medium">Contributors</p>
+            <div className="bg-white dark:bg-gray-700 p-4 rounded-lg text-center shadow-sm border border-gray-200 dark:border-gray-600 transition-colors duration-300">
+              <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 transition-colors duration-300">{new Set(photos.map(photo => photo.photographer)).size}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 font-medium transition-colors duration-300">Contributors</p>
             </div>
             {searchQuery ? (
-              <div className="bg-white p-4 rounded-lg text-center shadow-sm border border-gray-200">
-                <p className="text-3xl font-bold text-gray-900">{filteredPhotos.length}</p>
-                <p className="text-sm text-gray-600 mt-1 font-medium">Matching Photos</p>
+              <div className="bg-white dark:bg-gray-700 p-4 rounded-lg text-center shadow-sm border border-gray-200 dark:border-gray-600 transition-colors duration-300">
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 transition-colors duration-300">{filteredPhotos.length}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 font-medium transition-colors duration-300">Matching Photos</p>
               </div>
             ) : (
-              <div className="bg-white p-4 rounded-lg text-center shadow-sm border border-gray-200">
-                <p className="text-3xl font-bold text-gray-900">{Math.round(photos.length / new Set(photos.map(photo => photo.photographer)).size)}</p>
-                <p className="text-sm text-gray-600 mt-1 font-medium">Avg. Photos per Contributor</p>
+              <div className="bg-white dark:bg-gray-700 p-4 rounded-lg text-center shadow-sm border border-gray-200 dark:border-gray-600 transition-colors duration-300">
+                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 transition-colors duration-300">{Math.round(photos.length / new Set(photos.map(photo => photo.photographer)).size)}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 font-medium transition-colors duration-300">Avg. Photos per Contributor</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Credits and Contact */}
-        <div className="p-6 bg-gray-50 border border-gray-100 rounded-lg mt-6 shadow-sm">
+        <div className="p-6 bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg mt-6 shadow-sm transition-colors duration-300">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div>
-              <h3 className="text-lg font-semibold mb-2 text-gray-800">16 Pixels, The Photography Club of IIT Gandhinagar</h3>
-              <p className="text-gray-600">We capture every precious moment and shares it with the IITGN community. </p>
+              <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200 transition-colors duration-300">16 Pixels, The Photography Club of IIT Gandhinagar</h3>
+              <p className="text-gray-600 dark:text-gray-400 transition-colors duration-300">We capture every precious moment and shares it with the IITGN community. </p>
             </div>
             <div className="mt-6 md:mt-0 flex space-x-6">
               <a href="https://instagram.com/16pixels_iitgn" target="_blank" rel="noopener noreferrer" className="text-pink-500 hover:text-pink-600 transition-colors">
@@ -452,7 +452,7 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
               </a>
             </div>
           </div>
-          <div className="mt-6 pt-4 border-t border-gray-200 text-center text-gray-600">
+          <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 text-center text-gray-600 dark:text-gray-400 transition-colors duration-300">
             © 2025 16 Pixels PhotoStation. All rights reserved to the respective member of the Club.
           </div>
         </div>
