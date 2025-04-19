@@ -31,10 +31,17 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
+  // Track previous search query to detect changes
+  const [prevSearchQuery, setPrevSearchQuery] = useState('');
+
   // Handle search filtering on the client side
   useEffect(() => {
     const searchQuery = searchParams.get('q') || '';
     const exactMatch = searchParams.get('exact') === 'true';
+    const searchChanged = searchQuery !== prevSearchQuery;
+
+    // Update previous search query
+    setPrevSearchQuery(searchQuery);
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
@@ -57,12 +64,28 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
       }
 
       setFilteredPhotos(filtered);
-      // Reset to first page when search changes and update localStorage
-      paginate(1);
+
+      // Only reset to page 1 if the search query has changed
+      if (searchChanged) {
+        setCurrentPage(1);
+        // Update URL with page 1
+        const newParams = new URLSearchParams(searchParams.toString());
+        newParams.set('page', '1');
+        router.push(`/?${newParams.toString()}`, { scroll: false });
+      }
     } else {
       setFilteredPhotos(photos);
+
+      // If clearing search, go to page 1
+      if (searchChanged && prevSearchQuery) {
+        setCurrentPage(1);
+        // Update URL with page 1
+        const newParams = new URLSearchParams(searchParams.toString());
+        newParams.set('page', '1');
+        router.push(`/?${newParams.toString()}`, { scroll: false });
+      }
     }
-  }, [searchParams, photos]);
+  }, [searchParams, photos, prevSearchQuery]);
 
   // Calculate total pages
   const totalPages = Math.ceil(filteredPhotos.length / photosPerPage);
