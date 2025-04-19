@@ -79,10 +79,10 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
       setModalOpen(false);
     }
 
-    // Reset loading state after a short delay to allow images to start loading
+    // Reset loading state after a delay to ensure smooth transitions
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 300);
+    }, 800);
 
     return () => clearTimeout(timer);
   }, [currentPage, currentPhotos, modalOpen, selectedPhoto]);
@@ -202,12 +202,13 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
         </div>
       )}
 
-      {/* Loading overlay */}
+      {/* Loading overlay - only shown during page transitions */}
       {isLoading && (
-        <div className="fixed inset-0 bg-white bg-opacity-80 z-50 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500 mx-auto"></div>
-            <p className="mt-4 text-gray-700 font-medium">Loading photos...</p>
+        <div className="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center">
+          <div className="text-center p-8 bg-white rounded-lg shadow-lg">
+            <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-blue-500 mx-auto"></div>
+            <p className="mt-6 text-gray-700 text-lg font-medium">Loading photos...</p>
+            <p className="mt-2 text-gray-500 text-sm">Please wait while we prepare the next page</p>
           </div>
         </div>
       )}

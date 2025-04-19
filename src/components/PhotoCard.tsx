@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from 'react';
 import { Photo } from '@/utils/photos';
 
 interface PhotoCardProps {
@@ -9,30 +8,16 @@ interface PhotoCardProps {
 }
 
 export default function PhotoCard({ photo, onOpenModal }: PhotoCardProps) {
-  const [isLoading, setIsLoading] = useState(true);
-
-  const handleImageLoad = () => {
-    setIsLoading(false);
-  };
-
   return (
     <div
       className="relative overflow-hidden rounded-lg shadow-md group cursor-pointer"
       onClick={() => onOpenModal(photo)}
     >
       <div className="aspect-square relative overflow-hidden">
-        {/* Loading spinner */}
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        )}
-
         <img
           src={photo.src}
           alt={photo.title}
-          className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
-          onLoad={handleImageLoad}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
 
         {/* Info shown on hover */}
