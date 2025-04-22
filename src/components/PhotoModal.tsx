@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Photo } from '@/utils/photos';
 import { useRouter } from 'next/navigation';
 
@@ -15,6 +15,13 @@ interface PhotoModalProps {
 export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: PhotoModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  // Touch handling for swipe gestures
+  const [touchStart, setTouchStart] = useState<{x: number, y: number} | null>(null);
+  const [touchEnd, setTouchEnd] = useState<{x: number, y: number} | null>(null);
+
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50;
 
   // Handle keyboard navigation
   useEffect(() => {
@@ -51,6 +58,74 @@ export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: P
       document.body.classList.remove('modal-open');
     };
   }, [isOpen, onClose, onPrev, onNext]);
+
+  // Handle touch events for swipe gestures
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      setTouchEnd(null); // Reset touchEnd
+      setTouchStart({
+        x: e.targetTouches[0].clientX,
+        y: e.targetTouches[0].clientY
+      });
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      setTouchEnd({
+        x: e.targetTouches[0].clientX,
+        y: e.targetTouches[0].clientY
+      });
+    };
+
+    const handleTouchEnd = () => {
+      if (!touchStart || !touchEnd) return;
+
+      const distanceX = touchStart.x - touchEnd.x;
+      const distanceY = touchStart.y - touchEnd.y;
+      const isHorizontalSwipe = Math.abs(distanceX) > Math.abs(distanceY);
+
+      // Check if swipe distance exceeds minimum threshold
+      if (isHorizontalSwipe && Math.abs(distanceX) > minSwipeDistance) {
+        // Horizontal swipe
+        if (distanceX > 0) {
+          // Swipe left -> next photo
+          onNext();
+        } else {
+          // Swipe right -> previous photo
+          onPrev();
+        }
+      } else if (!isHorizontalSwipe && Math.abs(distanceY) > minSwipeDistance) {
+        // Vertical swipe
+        if (distanceY > 0) {
+          // Swipe up -> do nothing
+        } else {
+          // Swipe down -> close modal
+          onClose();
+        }
+      }
+
+      // Reset touch coordinates
+      setTouchStart(null);
+      setTouchEnd(null);
+    };
+
+    // Add touch event listeners
+    if (modalRef.current) {
+      modalRef.current.addEventListener('touchstart', handleTouchStart);
+      modalRef.current.addEventListener('touchmove', handleTouchMove);
+      modalRef.current.addEventListener('touchend', handleTouchEnd);
+    }
+
+    return () => {
+      // Remove touch event listeners
+      if (modalRef.current) {
+        modalRef.current.removeEventListener('touchstart', handleTouchStart);
+        modalRef.current.removeEventListener('touchmove', handleTouchMove);
+        modalRef.current.removeEventListener('touchend', handleTouchEnd);
+      }
+    };
+  }, [isOpen, touchStart, touchEnd, onPrev, onNext, onClose]);
 
   // Handle click outside to close
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -120,8 +195,8 @@ export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: P
           </div>
           {photo.description && <p className="text-xs mt-2">{photo.description}</p>}
 
-          {/* Keyboard shortcuts info */}
-          <div className="mt-4 text-xs text-gray-400 flex justify-center space-x-4">
+          {/* Keyboard shortcuts info - hidden on mobile */}
+          <div className="mt-4 text-xs text-gray-400 hidden md:flex justify-center space-x-4">
             <span className="flex items-center">
               <kbd className="px-2 py-1 bg-gray-800 rounded-md mr-1">←</kbd>
               <span>Previous</span>
@@ -134,6 +209,11 @@ export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: P
               <kbd className="px-2 py-1 bg-gray-800 rounded-md mr-1">Esc</kbd>
               <span>Close</span>
             </span>
+          </div>
+
+          {/* Mobile swipe hint - only shown on mobile */}
+          <div className="mt-4 text-xs text-gray-400 flex md:hidden justify-center">
+            <span>Swipe to navigate • Swipe down to close</span>
           </div>
         </div>
       </div>
