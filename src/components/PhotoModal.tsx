@@ -119,6 +119,22 @@ export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: P
             )}
           </div>
           {photo.description && <p className="text-xs mt-2">{photo.description}</p>}
+
+          {/* Keyboard shortcuts info */}
+          <div className="mt-4 text-xs text-gray-400 flex justify-center space-x-4">
+            <span className="flex items-center">
+              <kbd className="px-2 py-1 bg-gray-800 rounded-md mr-1">←</kbd>
+              <span>Previous</span>
+            </span>
+            <span className="flex items-center">
+              <kbd className="px-2 py-1 bg-gray-800 rounded-md mr-1">→</kbd>
+              <span>Next</span>
+            </span>
+            <span className="flex items-center">
+              <kbd className="px-2 py-1 bg-gray-800 rounded-md mr-1">Esc</kbd>
+              <span>Close</span>
+            </span>
+          </div>
         </div>
       </div>
 
