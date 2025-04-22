@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Photo } from '@/utils/photos';
 import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface PhotoModalProps {
   isOpen: boolean;
@@ -19,6 +20,8 @@ export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: P
   // Touch handling for swipe gestures
   const [touchStart, setTouchStart] = useState<{x: number, y: number} | null>(null);
   const [touchEnd, setTouchEnd] = useState<{x: number, y: number} | null>(null);
+  const [swipeDirection, setSwipeDirection] = useState<string | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
@@ -72,14 +75,31 @@ export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: P
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      if (!touchStart) return;
+
+      const currentX = e.targetTouches[0].clientX;
+      const currentY = e.targetTouches[0].clientY;
+
       setTouchEnd({
-        x: e.targetTouches[0].clientX,
-        y: e.targetTouches[0].clientY
+        x: currentX,
+        y: currentY
       });
+
+      // Calculate direction for real-time feedback
+      const diffX = touchStart.x - currentX;
+      const diffY = touchStart.y - currentY;
+
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        // Horizontal swipe
+        setSwipeDirection(diffX > 0 ? 'left' : 'right');
+      } else {
+        // Vertical swipe
+        setSwipeDirection(diffY > 0 ? 'up' : 'down');
+      }
     };
 
     const handleTouchEnd = () => {
-      if (!touchStart || !touchEnd) return;
+      if (!touchStart || !touchEnd || isAnimating) return;
 
       const distanceX = touchStart.x - touchEnd.x;
       const distanceY = touchStart.y - touchEnd.y;
@@ -88,26 +108,41 @@ export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: P
       // Check if swipe distance exceeds minimum threshold
       if (isHorizontalSwipe && Math.abs(distanceX) > minSwipeDistance) {
         // Horizontal swipe
+        setIsAnimating(true);
+
         if (distanceX > 0) {
           // Swipe left -> next photo
-          onNext();
+          setTimeout(() => {
+            onNext();
+            setIsAnimating(false);
+          }, 300); // Match animation duration
         } else {
           // Swipe right -> previous photo
-          onPrev();
+          setTimeout(() => {
+            onPrev();
+            setIsAnimating(false);
+          }, 300); // Match animation duration
         }
       } else if (!isHorizontalSwipe && Math.abs(distanceY) > minSwipeDistance) {
         // Vertical swipe
+        setIsAnimating(true);
+
         if (distanceY > 0) {
           // Swipe up -> do nothing
+          setIsAnimating(false);
         } else {
           // Swipe down -> close modal
-          onClose();
+          setTimeout(() => {
+            onClose();
+            setIsAnimating(false);
+          }, 300); // Match animation duration
         }
       }
 
-      // Reset touch coordinates
+      // Reset touch coordinates and direction
       setTouchStart(null);
       setTouchEnd(null);
+      setSwipeDirection(null);
     };
 
     // Add touch event listeners
@@ -172,13 +207,26 @@ export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: P
           <span>Swipe to navigate • Swipe down to close</span>
         </div>
 
-        <div className="relative w-full max-h-[75vh] md:max-h-[80vh] flex justify-center mb-2">
-          <img
+        <motion.div
+          className="relative w-full max-h-[75vh] md:max-h-[80vh] flex justify-center mb-2"
+          animate={{
+            x: swipeDirection === 'left' ? -20 : swipeDirection === 'right' ? 20 : 0,
+            y: swipeDirection === 'down' ? 20 : swipeDirection === 'up' ? -20 : 0,
+            opacity: swipeDirection ? 0.8 : 1
+          }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        >
+          <motion.img
+            key={photo.id} // Important for animation between photos
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             src={photo.src}
             alt={photo.title || 'Photo'}
             className="max-h-[75vh] md:max-h-[80vh] max-w-full object-contain shadow-lg rounded-lg"
           />
-        </div>
+        </motion.div>
 
         <div className="bg-black bg-opacity-60 p-4 rounded-lg text-white text-center max-w-xl">
           <h2 className="text-xl font-bold mb-1">{photo.title || ''}</h2>
