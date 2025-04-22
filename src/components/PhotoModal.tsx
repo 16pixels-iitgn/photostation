@@ -151,11 +151,32 @@ export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: P
       </button>
 
       <div className="flex flex-col items-center max-w-7xl w-full px-2">
-        <div className="relative w-full max-h-[85vh] flex justify-center mb-2">
+        {/* Keyboard shortcuts info - hidden on mobile */}
+        <div className="mb-2 text-xs text-gray-400 hidden md:flex justify-center space-x-4">
+          <span className="flex items-center">
+            <kbd className="px-2 py-1 bg-gray-800 rounded-md mr-1">←</kbd>
+            <span>Previous</span>
+          </span>
+          <span className="flex items-center">
+            <kbd className="px-2 py-1 bg-gray-800 rounded-md mr-1">→</kbd>
+            <span>Next</span>
+          </span>
+          <span className="flex items-center">
+            <kbd className="px-2 py-1 bg-gray-800 rounded-md mr-1">Esc</kbd>
+            <span>Close</span>
+          </span>
+        </div>
+
+        {/* Mobile swipe hint - only shown on mobile */}
+        <div className="mb-2 text-xs text-gray-400 flex md:hidden justify-center">
+          <span>Swipe to navigate • Swipe down to close</span>
+        </div>
+
+        <div className="relative w-full max-h-[75vh] md:max-h-[80vh] flex justify-center mb-2">
           <img
             src={photo.src}
             alt={photo.title || 'Photo'}
-            className="max-h-[85vh] max-w-full object-contain shadow-lg rounded-lg"
+            className="max-h-[75vh] md:max-h-[80vh] max-w-full object-contain shadow-lg rounded-lg"
           />
         </div>
 
@@ -194,27 +215,6 @@ export default function PhotoModal({ isOpen, onClose, photo, onPrev, onNext }: P
             )}
           </div>
           {photo.description && <p className="text-xs mt-2">{photo.description}</p>}
-
-          {/* Keyboard shortcuts info - hidden on mobile */}
-          <div className="mt-4 text-xs text-gray-400 hidden md:flex justify-center space-x-4">
-            <span className="flex items-center">
-              <kbd className="px-2 py-1 bg-gray-800 rounded-md mr-1">←</kbd>
-              <span>Previous</span>
-            </span>
-            <span className="flex items-center">
-              <kbd className="px-2 py-1 bg-gray-800 rounded-md mr-1">→</kbd>
-              <span>Next</span>
-            </span>
-            <span className="flex items-center">
-              <kbd className="px-2 py-1 bg-gray-800 rounded-md mr-1">Esc</kbd>
-              <span>Close</span>
-            </span>
-          </div>
-
-          {/* Mobile swipe hint - only shown on mobile */}
-          <div className="mt-4 text-xs text-gray-400 flex md:hidden justify-center">
-            <span>Swipe to navigate • Swipe down to close</span>
-          </div>
         </div>
       </div>
 
