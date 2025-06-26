@@ -24,28 +24,56 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const photosPerPage = 20;
-  const [filteredPhotos, setFilteredPhotos] = useState<Photo[]>(photos);
+
+  // Function to sort photos based on sort parameter
+  const sortPhotos = (photosToSort: Photo[], sortType: string): Photo[] => {
+    const sorted = [...photosToSort];
+
+    if (sortType === 'newer-first') {
+      // Sort by date descending (newer first), then by id descending as fallback
+      return sorted.sort((a, b) => {
+        // Parse dates for comparison
+        const dateA = a.date ? new Date(a.date.split('-').reverse().join('-')) : new Date(0);
+        const dateB = b.date ? new Date(b.date.split('-').reverse().join('-')) : new Date(0);
+
+        // If dates are different, sort by date (newer first)
+        if (dateA.getTime() !== dateB.getTime()) {
+          return dateB.getTime() - dateA.getTime();
+        }
+
+        // If dates are the same, sort by id descending (higher id first)
+        return parseInt(b.id) - parseInt(a.id);
+      });
+    } else {
+      // Default: older first (sort by id ascending)
+      return sorted.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+    }
+  };
+
+  // Get sort parameter from URL
+  const sortParam = searchParams.get('sort') || 'older-first';
+
+  // Apply sorting and filtering
+  const [filteredPhotos, setFilteredPhotos] = useState<Photo[]>(() => {
+    return sortPhotos(photos, sortParam);
+  });
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
-  // Track previous search query to detect changes
-  const [prevSearchQuery, setPrevSearchQuery] = useState('');
-
-  // Handle search filtering on the client side
+  // Update filtered photos when URL parameters change
   useEffect(() => {
     const searchQuery = searchParams.get('q') || '';
     const exactMatch = searchParams.get('exact') === 'true';
-    const searchChanged = searchQuery !== prevSearchQuery;
+    const sortType = searchParams.get('sort') || 'older-first';
 
-    // Update previous search query
-    setPrevSearchQuery(searchQuery);
+    let filtered = photos;
 
+    // Apply search filter if there's a query
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      let filtered;
 
       if (exactMatch) {
         // Exact match - only match whole words/names
@@ -64,30 +92,43 @@ export default function PhotoGrid({ photos }: PhotoGridProps) {
           (photo.date && photo.date.toLowerCase().includes(query))
         );
       }
-
-      setFilteredPhotos(filtered);
-
-      // Only reset to page 1 if the search query has changed
-      if (searchChanged) {
-        setCurrentPage(1);
-        // Update URL with page 1
-        const newParams = new URLSearchParams(searchParams.toString());
-        newParams.set('page', '1');
-        router.push(`/?${newParams.toString()}`, { scroll: false });
-      }
-    } else {
-      setFilteredPhotos(photos);
-
-      // If clearing search, go to page 1
-      if (searchChanged && prevSearchQuery) {
-        setCurrentPage(1);
-        // Update URL with page 1
-        const newParams = new URLSearchParams(searchParams.toString());
-        newParams.set('page', '1');
-        router.push(`/?${newParams.toString()}`, { scroll: false });
-      }
     }
-  }, [searchParams, photos, prevSearchQuery]);
+
+    // Apply sorting
+    const sorted = sortPhotos(filtered, sortType);
+    setFilteredPhotos(sorted);
+
+    // Reset to page 1 if current page is beyond available pages
+    const totalPages = Math.ceil(sorted.length / photosPerPage);
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(1);
+    }
+  }, [searchParams, photos, currentPage]);
+
+  // Track previous search query and sort to detect changes
+  const [prevSearchQuery, setPrevSearchQuery] = useState('');
+  const [prevSort, setPrevSort] = useState('');
+
+  // Handle URL parameter changes and update page accordingly
+  useEffect(() => {
+    const searchQuery = searchParams.get('q') || '';
+    const sortType = searchParams.get('sort') || 'older-first';
+    const searchChanged = searchQuery !== prevSearchQuery;
+    const sortChanged = sortType !== prevSort;
+
+    // Update previous values
+    setPrevSearchQuery(searchQuery);
+    setPrevSort(sortType);
+
+    // If search or sort changed, reset to page 1
+    if ((searchChanged || sortChanged) && (prevSearchQuery !== '' || prevSort !== '')) {
+      setCurrentPage(1);
+      // Update URL with page 1
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.set('page', '1');
+      router.push(`/?${newParams.toString()}`, { scroll: false });
+    }
+  }, [searchParams, prevSearchQuery, prevSort, router]);
 
   // Calculate total pages
   const totalPages = Math.ceil(filteredPhotos.length / photosPerPage);

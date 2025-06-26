@@ -78,13 +78,24 @@ yarn build
 │   │   └── metadata.csv  # Photo metadata
 ├── src/
 │   ├── app/              # Next.js app directory
-│   │   ├── page.tsx      # Home page
+│   │   ├── about/         # About page
+│   │   ├── contributors/  # Contributors page
+│   │   ├── gallery/       # Gallery page
+│   │   ├── page.tsx       # Home page
+│   │   ├── simple/        # Simple page (redundant)
 │   │   └── globals.css   # Global styles
 │   ├── components/       # React components
 │   │   ├── Header.tsx    # Site header
 │   │   ├── PhotoCard.tsx # Individual photo card
 │   │   ├── PhotoGrid.tsx # Grid of photos
 │   │   └── PhotoModal.tsx # Full-screen preview modal
+│   │   └── SearchBar.tsx # Search bar component
+│   │   └── SortButton.tsx # Sort button component
+│   │   └── VisitorCounter.tsx # Visitor counter component
+│   │   └── ThemeToggle.tsx # Dark mode toggle
+│   │   └── ThemeProvider.tsx # Dark mode provider
+│   ├── context/          # React context providers
+│   │   └── ThemeContext.ts # Dark mode context
 │   └── utils/            # Utility functions
 │       └── photos.ts     # Photo loading and processing
 ├── .github/workflows/    # GitHub Actions workflows
@@ -104,6 +115,9 @@ yarn build
 
 ### Searching
 - Use the search bar to find photos by photographer name, title, or description
+
+### Secretaries
+- to update the details, add the details in the `public/about/secys.csv` file and add the profile picture in the `public/about/` folder. 
 
 ## Contributing
 
