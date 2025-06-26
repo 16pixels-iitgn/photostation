@@ -16,6 +16,18 @@ export interface Photo {
   src: string;
 }
 
+export interface Secretary {
+  Sr: string;
+  Name: string;
+  Year: string;
+  Email: string;
+  LinkedIn: string;
+  Instagram: string;
+  Status: string;
+  dppath: string;
+  src: string; // Full path to profile image
+}
+
 // Fallback data for testing
 const fallbackPhotos: Photo[] = [
   {
@@ -121,4 +133,60 @@ export async function getPhotos(searchQuery?: string): Promise<Photo[]> {
 export async function getPhotoById(id: string): Promise<Photo | null> {
   const photos = await getPhotos();
   return photos.find(photo => photo.id === id) || null;
+}
+
+export async function getSecretaries(): Promise<Secretary[]> {
+  try {
+    // Read the CSV file from the public about folder
+    const csvPath = path.join(process.cwd(), 'public', 'about', 'secys.csv');
+
+    const csvData = await fsPromises.readFile(csvPath, 'utf-8');
+
+    // Parse CSV data
+    const lines = csvData.split('\n');
+
+    const headers = lines[0].split(',').map(h => h.trim());
+
+    const secretaries: Secretary[] = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      if (!lines[i].trim()) continue;
+
+      const values = lines[i].split(',');
+
+      if (values.length < headers.length) {
+        // Skip lines with incorrect number of values
+        continue;
+      }
+
+      const secretary: any = {};
+
+      headers.forEach((header, index) => {
+        secretary[header] = values[index]?.trim() || '';
+      });
+
+      // Add the profile image source path with the correct base path
+      // Remove the ./ prefix from dppath and add the correct path
+      const imagePath = secretary.dppath.replace('./', '');
+      secretary.src = `${basePath}/about/${imagePath}`;
+
+      secretaries.push(secretary as Secretary);
+    }
+
+    // Sort by status (Present Secretary first, then by year descending)
+    secretaries.sort((a, b) => {
+      if (a.Status.includes('Present') && !b.Status.includes('Present')) return -1;
+      if (!a.Status.includes('Present') && b.Status.includes('Present')) return 1;
+
+      // For past secretaries, sort by year descending
+      const yearA = parseInt(a.Year.split('-')[0]);
+      const yearB = parseInt(b.Year.split('-')[0]);
+      return yearB - yearA;
+    });
+
+    return secretaries;
+  } catch (error) {
+    console.error('Error loading secretaries:', error);
+    return [];
+  }
 }

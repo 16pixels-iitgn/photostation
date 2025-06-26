@@ -105,6 +105,9 @@ yarn build
 ### Searching
 - Use the search bar to find photos by photographer name, title, or description
 
+### Secretaries
+- to update the details, add the details in the `public/about/secys.csv` file and add the profile picture in the `public/about/` folder. 
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
