@@ -1,5 +1,6 @@
 import PhotoGrid from '@/components/PhotoGrid';
 import SearchBar from '@/components/SearchBar';
+import SortButton from '@/components/SortButton';
 import VisitorCounter from '@/components/VisitorCounter';
 import { getPhotos } from '@/utils/photos';
 
@@ -29,7 +30,10 @@ export default async function Home() {
           </p>
         </div>
       ) : (
-        <PhotoGrid photos={photos} />
+        <div>
+          <SortButton />
+          <PhotoGrid photos={photos} />
+        </div>
       )}
     </div>
   );
